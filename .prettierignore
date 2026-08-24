@@ -1,0 +1,9 @@
+dist
+node_modules
+.astro
+package-lock.json
+public/fonts
+
+# cv.yaml is maintained by rendercv and its folded block scalars carry meaning —
+# reformatting it would rewrite line breaks the CV text depends on.
+cv.yaml

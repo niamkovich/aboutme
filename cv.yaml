@@ -1,0 +1,165 @@
+cv:
+  name: Aliaksei Niamkovich
+  headline: React-native developer
+  location: Minsk, Belarus
+  email: aliaksei.niamkovich@gmail.com
+  photo:
+  phone: +48 690 366 288, +375 44 784 15 85
+  website: https://niamkovich.dev
+  social_networks:
+    - network: LinkedIn
+      username: aliakseiniamkovich
+    - network: GitHub
+      username: niamkovich
+  custom_connections:
+  sections:
+    professional_summary:
+      [
+          "Senior Software Engineer with **10+ years** of professional
+          experience in mobile and web development.
+
+          Strong expertise in cross-platform mobile applications, IoT
+          integrations, healthcare and automotive
+
+          domains. Experienced in scalable architectures, Bluetooth
+          communication, cloud services, and white-
+
+          label products."
+      ]
+    skills:
+      - label: Languages
+        details: JavaScript, TypeScript
+      - label: Cross platform development
+        details: React-native, Expo
+      - label: Tools & Frameworks
+        details: React, React-native, Expo SDK, MobX, Firebase, Branch.io, Crowdin
+      - label: "DevOps & Infrastructure:"
+        details: GitHub Actions, GitLab CI, Bitrise workflows, Expo Application Services
+          workflows.
+    education:
+      - institution: Higher State College of Communication
+        area: Computer Systems Networking and Telecommunications
+        degree: Telecommunications Specialist
+        date:
+        start_date: 2008-09
+        end_date: 2012-07
+        location: Minsk, Belarus
+        summary:
+        highlights:
+          - Studied principles of digital and analog data transmission,
+            including encoding and modulation techniques
+          - Gained understanding of the OSI model and its practical application
+            in network architectures
+          - Worked with core data transmission protocols (TCP/IP, UDP, HTTP,
+            etc.)
+          - "Acquired knowledge of communication systems across different
+            domains: internet, telephony, and television"
+          - Understand fundamentals of network design and operation
+          - Possess basic skills in network troubleshooting and analysis
+      - institution: Higher State College of Communication
+        area: Economics
+        degree:
+        date:
+        start_date: 2012-09
+        end_date: 2014-06
+        location: Minsk, Belarus
+        summary:
+        highlights: []
+    experience:
+      - company: JDG Aliaksei Niamkovich
+        position: React-native developer
+        start_date: 2023-11
+        end_date: present
+        location:
+      - company: AKVEO
+        position: Mobile application developer
+        date:
+        start_date: 2020-03
+        end_date: 2023-06
+        location: Minsk, Belarus. Białystok, Poland.
+        summary:
+        highlights: []
+      - company: HQSoftware
+        position: Front-end developer
+        date:
+        start_date: 2015-12
+        end_date: 2019-08
+        location: Minsk, Belarus
+        summary:
+        highlights: []
+      - company: Daroo
+        position: Front-end developer. UI/UX - designer
+        date:
+        start_date: 2014-05
+        end_date: 2015-05
+        location: Minsk, Belarus
+        summary:
+        highlights: []
+    projects:
+      - name: "[Smart
+          Caravan](https://www.akveo.com/case-studies/application-for-mobile-ho\
+          mes)"
+        date:
+        start_date: 2020-03
+        end_date: 2025-08
+        location: Białystok, Poland
+        summary: >-
+          Smart companion mobile application for travel trailers and motorhomes.
+          The app provides access to
+
+          vehicle and living-area functions such as air conditioning, heating,
+          lighting, and system status. It pairs
+
+          with a trailer’s Smart Control Unit (SCU) via Bluetooth (BLE) and
+          synchronizes data with cloud services.
+
+          The application is a white-label solution customized for multiple
+          vehicle brands and distributed via App
+
+          Store and Google Play.
+        highlights:
+          - "**Tech stack:** React Native, TypeScript, UI Kitten, MobX, React
+            Navigation, Firebase, Bitrise"
+          - CI/CD pipeline setup and maintenance with Bitrise
+          - Cloud integration and data synchronization
+          - White-label architecture supporting multiple brands
+          - IoT integration with vehicle hardware via BLE
+          - Development of cross-platform mobile application (iOS & Android)
+          - Implementation of centralized translation platform Crowdin
+          - QR code scanning via camera integration
+          - Crash reporting and monitoring
+          - Deep linking platform integration. First Firebase, then Branch.io
+      - name: "[A HIPAA-Compliant Platform for Opioid Crisis Response
+          Teams](https://www.akveo.com/case-study-ai/goldie-health)"
+        summary: >-
+          Goldie Health is a digital health platform created to support agencies
+          identifying and engaging individuals at risk of opioid overdose. The
+          platform helps response teams deliver personalized care by integrating
+          with electronic patient care reports (ePCRs), electronic health
+          records (EHRs), and local community referral networks. It also
+          addresses barriers to treatment by factoring in social determinants of
+          health such as housing instability or financial constraints.
+
+          By offering tailored, adaptive care pathways and ensuring compliance
+          with HIPAA and 42 CFR Part 2 regulations, Goldie enables secure data
+          sharing and collaboration among healthcare providers and social
+          service organizations.
+        location: Białystok, Poland
+        start_date: 2025-08
+        end_date: 2026-01
+        highlights:
+          - "**Tech stack:** React Native (Expo), React, MobX, EAS"
+          - Offline mode support
+          - Dynamic form system based on JSON-schema validation
+          - Automated build pipeline with GitHub Actions and Expo Application
+            Services
+    languages:
+      - label: English
+        details: "[C1](https://cert.efset.org/JXE5Bb)"
+      - label: "Język Polski "
+        details: Intermediate (A2-B1)
+      - label: Беларуская мова
+        details: Native
+      - label: Русский язык
+        details: Native
+

@@ -1,0 +1,141 @@
+---
+import Base from '../layouts/Base.astro';
+import CvEntry from './CvEntry.astro';
+import {
+  getContact,
+  getEducation,
+  getExperience,
+  getLanguages,
+  getProjects,
+  getSkills,
+  getSummary,
+} from '../data/cv';
+import { ui, type Locale } from '../i18n/ui';
+import { inlineMarkdown } from '../lib/inline-markdown';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale];
+
+const contact = getContact(locale);
+const summary = getSummary(locale);
+const skills = getSkills(locale);
+const projects = getProjects(locale);
+const experience = getExperience(locale);
+const education = getEducation(locale);
+const languages = getLanguages(locale);
+---
+
+<Base
+  locale={locale}
+  title={`${contact.name} — ${t.cvTitle}`}
+  description={t.cvDescription}
+  mode="doc"
+  current="cv"
+>
+  <header data-col>
+    <h1>{t.cvTitle}</h1>
+    <p class="lede">{t.cvLede}</p>
+  </header>
+
+  <div data-col>
+    <section aria-labelledby="summary">
+      <h2 id="summary">{t.sectionSummary}</h2>
+      {summary.map((paragraph) => <p set:html={inlineMarkdown(paragraph)} />)}
+    </section>
+
+    <section aria-labelledby="skills">
+      <h2 id="skills">{t.sectionSkills}</h2>
+      <dl class="defs">
+        {
+          skills.map((skill) => (
+            <div>
+              <dt>{skill.label}</dt>
+              <dd set:html={inlineMarkdown(skill.details)} />
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section aria-labelledby="projects">
+      <h2 id="projects">{t.sectionProjects}</h2>
+      {projects.map((entry) => <CvEntry entry={entry} locale={locale} />)}
+    </section>
+
+    <section aria-labelledby="experience">
+      <h2 id="experience">{t.sectionExperience}</h2>
+      {experience.map((entry) => <CvEntry entry={entry} locale={locale} />)}
+    </section>
+
+    <section aria-labelledby="education">
+      <h2 id="education">{t.sectionEducation}</h2>
+      {education.map((entry) => <CvEntry entry={entry} locale={locale} />)}
+    </section>
+
+    <section aria-labelledby="languages">
+      <h2 id="languages">{t.sectionLanguages}</h2>
+      <dl class="defs">
+        {
+          languages.map((language) => (
+            <div>
+              <dt>{language.label}</dt>
+              <dd set:html={inlineMarkdown(language.details)} />
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section aria-labelledby="contact" class="stack-last">
+      <h2 id="contact">{t.sectionContact}</h2>
+      <dl class="defs">
+        {
+          contact.email && (
+            <div>
+              <dt>{t.contactEmail}</dt>
+              <dd>
+                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+              </dd>
+            </div>
+          )
+        }
+        {
+          contact.phone && (
+            <div>
+              <dt>{t.contactPhone}</dt>
+              <dd>
+                <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}>{contact.phone}</a>
+              </dd>
+            </div>
+          )
+        }
+        {
+          contact.links.map((link) => (
+            <div>
+              <dt>{link.network}</dt>
+              <dd>
+                <a href={link.href} target="_blank" rel="noopener noreferrer">
+                  {link.username}
+                </a>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+  </div>
+</Base>
+
+<style>
+  header {
+    margin-bottom: 1rem;
+  }
+
+  section:first-of-type h2 {
+    margin-top: 1.6em;
+  }
+</style>

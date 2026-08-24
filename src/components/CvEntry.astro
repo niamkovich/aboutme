@@ -1,0 +1,46 @@
+---
+import { formatPeriod, type Entry } from '../data/cv';
+import { inlineMarkdown } from '../lib/inline-markdown';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  entry: Entry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const period = formatPeriod(entry, locale);
+const meta = [entry.subtitle, entry.location].filter(Boolean).join(' · ');
+---
+
+<article class="entry">
+  <div data-row>
+    <h3 set:html={inlineMarkdown(entry.title)} />
+    {period && <span class="when">{period}</span>}
+  </div>
+
+  {meta && <p class="meta muted">{meta}</p>}
+
+  {entry.summary && <p class="summary" set:html={inlineMarkdown(entry.summary)} />}
+
+  {
+    entry.highlights.length > 0 && (
+      <ul>
+        {entry.highlights.map((item) => (
+          <li set:html={inlineMarkdown(item)} />
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  .meta {
+    margin: 0.15em 0 0;
+    font-size: 0.92em;
+  }
+
+  .summary {
+    margin: 0.55em 0 0;
+  }
+</style>

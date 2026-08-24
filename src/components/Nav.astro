@@ -1,0 +1,25 @@
+---
+import { localePath, otherLocale, ui, LOCALE_NAME, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  current: '' | 'cv';
+}
+
+const { locale, current } = Astro.props;
+const t = ui[locale];
+const other = otherLocale(locale);
+---
+
+<nav data-nav data-col aria-label={locale === 'be' ? 'Асноўнае меню' : 'Main'}>
+  <a href={localePath(locale, '')} aria-current={current === '' ? 'page' : undefined}>
+    {t.navAbout}
+  </a>
+  <a href={localePath(locale, 'cv')} aria-current={current === 'cv' ? 'page' : undefined}>
+    {t.navCv}
+  </a>
+  <span class="spacer"></span>
+  <a href={localePath(other, current)} hreflang={other} title={t.switchLanguage}>
+    {LOCALE_NAME[other]}
+  </a>
+</nav>

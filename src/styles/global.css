@@ -1,0 +1,364 @@
+/* ---------------------------------------------------------------------------
+   Design tokens and layout ported from the Claude Design source
+   (project 213fa21b, index.dc.html). The [data-body] / [data-col] / [data-side]
+   attribute hooks are load-bearing: the responsive rules below key off them, so
+   these styles are global rather than component-scoped.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --paper: #fffff8;
+  --ink: #111110;
+  --ink-muted: #57574f;
+  --rule: #d9d9cc;
+  --link: oklch(0.5 0.13 28);
+  --link-hover: oklch(0.38 0.11 28);
+
+  --serif: 'Alegreya Variable', 'Alegreya', 'Palatino Linotype', Palatino, Georgia, serif;
+  --display: 'Skaryna', 'Alegreya Variable', 'Alegreya', Georgia, serif;
+  --smallcaps: 'Alegreya Sans SC', 'Alegreya Variable', Georgia, serif;
+
+  /* Column geometry. These three are interdependent: the sidenote sits in the
+     margin created by the column being 55% wide and indented 11.5%. Changing
+     one without the others pushes sidenotes off the page. */
+  --col-width: 55%;
+  --col-indent: 11.5%;
+  --side-width: 35%;
+  --side-pull: -40%;
+}
+
+/* Skaryna is a historical Belarusian titling face: its unicase letterforms read
+   as deliberate in Cyrillic and as broken in Latin, so English headings fall
+   back to Alegreya's own capitals. */
+html[lang='en'] {
+  --display: 'Alegreya Variable', 'Alegreya', 'Palatino Linotype', Palatino, Georgia, serif;
+}
+
+@font-face {
+  font-family: 'Skaryna';
+  src: url('/fonts/skaryna-title.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  border-bottom: 1px solid oklch(0.5 0.13 28 / 0.3);
+}
+
+a:hover {
+  color: var(--link-hover);
+  border-bottom-color: oklch(0.38 0.11 28 / 0.35);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-bottom-color: var(--rule);
+  font-family: var(--smallcaps);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+  padding: 0.6em 1em;
+  z-index: 10;
+}
+
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* --- Page shell ---------------------------------------------------------- */
+
+[data-body] {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  line-height: 1.55;
+  text-wrap: pretty;
+  max-width: 1100px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* One-screen page: viewport-relative type, vertically centred, never scrolls. */
+[data-body='screen'] {
+  font-size: clamp(15px, min(1.9vh, 21px), 21px);
+  padding: 4vh 6%;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+/* Long-form page: fixed type scale, top-aligned, scrolls. Viewport-height
+   typography reads wrong once the content is taller than the screen. */
+[data-body='doc'] {
+  font-size: 19px;
+  padding: 4rem 6% 6rem;
+  min-height: 100vh;
+  justify-content: flex-start;
+}
+
+/* --- Measure column ------------------------------------------------------ */
+
+[data-col] {
+  width: var(--col-width);
+  min-width: 320px;
+  margin-left: var(--col-indent);
+}
+
+/* --- Sidenotes ----------------------------------------------------------- */
+
+[data-side] {
+  float: right;
+  clear: right;
+  width: var(--side-width);
+  margin-right: var(--side-pull);
+  font: italic clamp(13px, 1.45vh, 15px) / 1.5 var(--serif);
+  color: var(--ink-muted);
+  text-align: left;
+}
+
+[data-body='doc'] [data-side] {
+  font: italic 15px / 1.5 var(--serif);
+}
+
+/* --- Headings ------------------------------------------------------------ */
+
+[data-body] h1 {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+
+[data-body='screen'] h1 {
+  font-size: clamp(30px, 5.4vh, 54px);
+}
+
+[data-body='doc'] h1 {
+  font-size: 46px;
+}
+
+[data-body] h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 27px;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  margin: 2.6em 0 0.9em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--rule);
+}
+
+[data-body] h3 {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1em;
+  line-height: 1.3;
+  margin: 0;
+}
+
+[data-body] p {
+  margin: 0 0 1.4em;
+}
+
+/* --- Small utilities ----------------------------------------------------- */
+
+.lede {
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+[data-body='screen'] .lede {
+  font-size: clamp(15px, 1.85vh, 19px);
+}
+
+[data-body='doc'] .lede {
+  font-size: 19px;
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+.stack-last > :last-child {
+  margin-bottom: 0;
+}
+
+/* --- Navigation ---------------------------------------------------------- */
+
+[data-nav] {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  font-family: var(--smallcaps);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  margin-bottom: 3vh;
+}
+
+[data-nav] a {
+  color: var(--ink-muted);
+  border-bottom: none;
+}
+
+[data-nav] a:hover {
+  color: var(--ink);
+}
+
+[data-nav] a[aria-current='page'] {
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+
+[data-nav] .spacer {
+  flex: 1;
+}
+
+/* --- Two-column rows (entry label + detail) ------------------------------ */
+
+[data-row] {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 1.5em;
+  align-items: baseline;
+}
+
+[data-row] .when {
+  font-family: var(--smallcaps);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.entry {
+  margin: 0 0 1.8em;
+}
+
+.entry ul {
+  margin: 0.5em 0 0;
+  padding-left: 1.1em;
+}
+
+.entry li {
+  margin: 0 0 0.3em;
+}
+
+.entry li::marker {
+  color: var(--rule);
+}
+
+.defs {
+  margin: 0;
+}
+
+.defs > div {
+  margin: 0 0 0.9em;
+}
+
+.defs dt {
+  font-family: var(--smallcaps);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.defs dd {
+  margin: 0.1em 0 0;
+}
+
+/* --- Responsive (verbatim from the design source) ------------------------ */
+
+@media (max-width: 900px) {
+  [data-col] {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 34em;
+  }
+
+  [data-side] {
+    float: none !important;
+    width: auto !important;
+    margin: 1em 0 1em 0 !important;
+    display: block !important;
+    padding-left: 14px;
+    border-left: 1px solid var(--rule);
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* The design source keeps the 11.5% column indent at every width, which on a
+     phone leaves a 66px left margin against a 27px right one. Reset it here so
+     the measure stays centred; the tablet indent above is untouched. */
+  [data-col] {
+    margin-left: 0 !important;
+  }
+
+  [data-body] {
+    font-size: 17px !important;
+    padding: 6vh 7% !important;
+    min-height: 0 !important;
+  }
+
+  [data-body] h1 {
+    font-size: 32px !important;
+  }
+
+  [data-body] h2 {
+    font-size: 23px !important;
+  }
+
+  [data-nav] {
+    gap: 16px !important;
+    font-size: 10px !important;
+  }
+
+  [data-row] {
+    grid-template-columns: 1fr !important;
+    gap: 4px !important;
+  }
+}
+
+@media print {
+  [data-body] {
+    min-height: 0;
+    padding: 0;
+    font-size: 11pt;
+  }
+
+  [data-nav] {
+    display: none;
+  }
+}

@@ -1,0 +1,74 @@
+---
+import '@fontsource-variable/alegreya/wght.css';
+import '@fontsource-variable/alegreya/wght-italic.css';
+import '@fontsource/alegreya-sans-sc/500.css';
+import '../styles/global.css';
+
+import Nav from '../components/Nav.astro';
+import { localePath, ui, LOCALES, LOCALE_TAG, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** 'screen' is the one-page, vertically centred layout; 'doc' scrolls. */
+  mode: 'screen' | 'doc';
+  current: '' | 'cv';
+}
+
+const { locale, title, description, mode, current } = Astro.props;
+const canonical = new URL(localePath(locale, current), Astro.site);
+const t = ui[locale];
+---
+
+<!doctype html>
+<html lang={LOCALE_TAG[locale]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {
+      LOCALES.map((alt) => (
+        <link
+          rel="alternate"
+          hreflang={LOCALE_TAG[alt]}
+          href={new URL(localePath(alt, current), Astro.site)}
+        />
+      ))
+    }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(localePath('be', current), Astro.site)}
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="theme-color" content="#fffff8" />
+    {
+      /* Skaryna only sets Belarusian headings, so English pages skip the fetch. */
+      locale === 'be' && (
+        <link
+          rel="preload"
+          href="/fonts/skaryna-title.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      )
+    }
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip" href="#content">{t.skipToContent}</a>
+    <div data-body={mode}>
+      <Nav locale={locale} current={current} />
+      <main id="content">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

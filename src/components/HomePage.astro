@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import { home } from '../i18n/home';
+import { ui, type Locale } from '../i18n/ui';
+import { getContact } from '../data/cv';
+import { inlineMarkdown } from '../lib/inline-markdown';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = home[locale];
+const t = ui[locale];
+const contact = getContact(locale);
+
+/** Contact details are placeholders in the copy so they stay in cv.yaml only. */
+const tokens: Record<string, string> = {
+  '{email}': contact.email ? `[${contact.email}](mailto:${contact.email})` : '',
+  '{phone}': contact.phone ? `[${contact.phone}](tel:${contact.phone.replace(/\s+/g, '')})` : '',
+  ...Object.fromEntries(
+    contact.links.map((link) => [
+      `{${link.network.toLowerCase()}}`,
+      `[${link.network}](${link.href})`,
+    ]),
+  ),
+};
+
+function fill(text: string): string {
+  return text.replace(/\{[a-z]+\}/g, (token) => tokens[token] ?? token);
+}
+
+const paragraphs = copy.paragraphs.map((paragraph) => ({
+  html: inlineMarkdown(fill(paragraph.text)),
+  side: paragraph.side,
+}));
+---
+
+<Base
+  locale={locale}
+  title={`${copy.title}`}
+  description={t.homeDescription}
+  mode="screen"
+  current=""
+>
+  <header data-col>
+    <h1>{copy.title}</h1>
+    <p class="lede">{copy.lede}</p>
+  </header>
+
+  <section data-col class="stack-last">
+    {
+      paragraphs.map((paragraph) => (
+        <p>
+          <Fragment set:html={paragraph.html} />
+          {paragraph.side && <span data-side>{paragraph.side}</span>}
+        </p>
+      ))
+    }
+  </section>
+</Base>
+
+<style>
+  header {
+    margin-bottom: 4vh;
+  }
+</style>
