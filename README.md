@@ -1,4 +1,4 @@
-# niamkovich.com
+# niamkovich.dev
 
 Personal site — Astro, static output, bilingual (Belarusian default, English at `/en/`).
 
@@ -9,12 +9,20 @@ static HTML.
 
 ## Commands
 
-| Command           | What it does                   |
-| ----------------- | ------------------------------ |
-| `npm run dev`     | Dev server at `localhost:4321` |
-| `npm run build`   | Static build into `dist/`      |
-| `npm run preview` | Serve the built output         |
-| `npm run check`   | TypeScript + Astro diagnostics |
+| Command           | What it does                              |
+| ----------------- | ----------------------------------------- |
+| `npm run dev`     | Dev server at `localhost:4321`            |
+| `npm run build`   | Static build into `dist/`                 |
+| `npm run preview` | Serve the built output                    |
+| `npm run check`   | TypeScript + Astro diagnostics            |
+| `npm run lint`    | ESLint (`--fix` variant: `lint:fix`)      |
+| `npm run format`  | Prettier write (`format:check` to verify) |
+| `npm run verify`  | format:check → lint → check, in order     |
+
+Requires Node ≥ 24.16 (`.nvmrc` pins it) — `eslint-plugin-astro` refuses to
+install below that. `eslint-plugin-jsx-a11y` is deliberately absent: it has no
+ESLint 10 support yet, so the `astro/jsx-a11y-*` rules are unavailable and
+accessibility is checked by hand rather than by rule.
 
 ## Where the content lives
 
@@ -42,24 +50,73 @@ It is prose, not generated from `cv.yaml`. Contact details are written as
 
 **`src/i18n/ui.ts`** holds nav labels, section headings and meta descriptions.
 
-## Layout notes
+## Typography
 
-`src/styles/global.css` carries the design verbatim, including the attribute
-hooks the responsive rules key off:
+`src/styles/global.css` follows
+[the-proportional-web](https://github.com/owickstrom/the-proportional-web) —
+Bringhurst's _Elements of Typographic Style_ applied to the web.
 
-- `[data-body="screen"]` — the one-page, vertically centred layout with
-  viewport-relative type. Used for the home page.
-- `[data-body="doc"]` — same look, fixed type scale, top-aligned, scrolls. Used
-  for the CV, where `vh`-based typography would read wrong.
-- `[data-col]` — the measure column: `55%` wide, indented `11.5%`.
-- `[data-side]` — Tufte-style margin notes. They float into the gutter the
-  column's width and indent create, so `--col-width`, `--col-indent`,
-  `--side-width` and `--side-pull` in `:root` are interdependent — changing one
-  alone pushes sidenotes off the page. Under 900px they collapse to
+**One line-height is the atom.** `--lh: 1.2rem` is the unit of vertical rhythm,
+and every vertical measure in the file is an integer multiple of it, so every
+line of text on every page sits on the same baseline grid. Horizontal measures
+are all in `ch`. The only `px` in the file are the root font size and the
+hairline rule.
+
+**To loosen or tighten the whole document, change `--lh`. Nothing else.** The
+type scale, every margin and the grid all follow from it.
+
+Consequences worth knowing before editing:
+
+- Nothing is sized against the viewport. The root steps `16px → 14px` at 480px
+  and that is the entire responsive type story — no `clamp()`, no `vh`, no
+  per-breakpoint font sizes.
+- Paragraphs are separated by a `3ch` first-line indent, not a blank line
+  (`p + p`). A paragraph directly after a heading is flush and gets no extra
+  space, since the heading already sets it.
+- Text is justified with `hyphens: auto`. English hyphenates; Belarusian does
+  not, because no browser ships a Belarusian dictionary — so Belarusian
+  paragraphs show wider word spacing. That is a known, accepted trade-off. To
+  undo it, drop `text-align: justify` from the `:is(p, li, dd)` rule.
+- Any new vertical spacing must be `calc(var(--lh) * n)`. If you need a
+  fractional value, pair it with its complement so the block still advances a
+  whole number of lines — `h2` does this with `0.25` padding and `0.75` margin.
+- Borders that sit in the flow break the grid: a `1.5px` border snaps to `1px`
+  at DPR 1, so the block ends up half a pixel short and everything below drifts.
+  The rule under `h2` is drawn with an inset `box-shadow`, which takes no layout
+  space at any pixel ratio. Do the same for any new horizontal rule.
+- `[data-row]` uses `align-items: start`, not `baseline`. Baseline-aligning two
+  different families at different sizes makes the row about a pixel taller than
+  one line, and that error accumulates down the page.
+
+The attribute hooks the layout and the Astro components share:
+
+- `[data-body="screen"]` — vertically centred; used for the home page. At a
+  fixed rem size it scrolls on a short window rather than shrinking to fit.
+- `[data-body="doc"]` — top-aligned, scrolls. Used for the CV. Both modes now
+  share one type scale; only the alignment differs.
+- `[data-col]` — the measure, `--measure: 66ch`.
+- `[data-side]` — margin notes. They float into a gutter of `--side-width` plus
+  `--side-gap`, pulled right by exactly that sum, so the sidenote column no
+  longer depends on how wide the measure is. Under 900px they collapse to
   left-bordered blocks inline with the text.
 
 These styles are deliberately **global**, not component-scoped: Astro's scoping
-plus `!important` attribute selectors would break the media queries silently.
+would break the attribute-selector media queries silently.
+
+To check the grid after a change, overlay it:
+
+```css
+[data-body] {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(220 0 0 / 0.35) 0 1px,
+    transparent 1px var(--lh)
+  );
+}
+```
+
+Every line of text should sit in the same position between two red rules the
+whole way down the page.
 
 ## Fonts
 

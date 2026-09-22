@@ -79,8 +79,25 @@ export interface Contact {
   headline: string;
   location: string;
   email?: string;
-  phone?: string;
+  phones: string[];
   links: { network: string; username: string; href: string }[];
+}
+
+/** cv.yaml keeps every number in one comma-separated field. */
+function splitPhones(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(',')
+    .map((phone) => phone.trim())
+    .filter(Boolean);
+}
+
+/**
+ * A tel: URI addresses exactly one number, so it gets its own link. Spaces and
+ * punctuation are stripped; the leading + is not.
+ */
+export function telHref(phone: string): string {
+  return `tel:${phone.replace(/[^\d+]/g, '')}`;
 }
 
 /* --- Helpers -------------------------------------------------------------- */
@@ -212,7 +229,7 @@ export function getContact(locale: Locale): Contact {
     headline: localise(locale, 'meta:headline', 'title', source.headline ?? ''),
     location: localise(locale, 'meta:location', 'title', source.location ?? ''),
     email: source.email,
-    phone: source.phone,
+    phones: splitPhones(source.phone),
     links: networks.map((entry) => ({
       ...entry,
       href:

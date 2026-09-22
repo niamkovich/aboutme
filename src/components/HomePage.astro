@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { home } from '../i18n/home';
 import { ui, type Locale } from '../i18n/ui';
-import { getContact } from '../data/cv';
+import { getContact, telHref } from '../data/cv';
 import { inlineMarkdown } from '../lib/inline-markdown';
 
 interface Props {
@@ -17,7 +17,7 @@ const contact = getContact(locale);
 /** Contact details are placeholders in the copy so they stay in cv.yaml only. */
 const tokens: Record<string, string> = {
   '{email}': contact.email ? `[${contact.email}](mailto:${contact.email})` : '',
-  '{phone}': contact.phone ? `[${contact.phone}](tel:${contact.phone.replace(/\s+/g, '')})` : '',
+  '{phone}': contact.phones.map((phone) => `[${phone}](${telHref(phone)})`).join(', '),
   ...Object.fromEntries(
     contact.links.map((link) => [
       `{${link.network.toLowerCase()}}`,
@@ -40,7 +40,7 @@ const paragraphs = copy.paragraphs.map((paragraph) => ({
   locale={locale}
   title={`${copy.title}`}
   description={t.homeDescription}
-  mode="screen"
+  mode="home"
   current=""
 >
   <header data-col>
@@ -51,10 +51,12 @@ const paragraphs = copy.paragraphs.map((paragraph) => ({
   <section data-col class="stack-last">
     {
       paragraphs.map((paragraph) => (
-        <p>
-          <Fragment set:html={paragraph.html} />
-          {paragraph.side && <span data-side>{paragraph.side}</span>}
-        </p>
+        <Fragment>
+          <p set:html={paragraph.html} />
+          {/* A sibling of the paragraph, not a child of it: the note is its own
+              aside, and the CSS lifts it into the margin from here. */}
+          {paragraph.side && <aside data-side>{paragraph.side}</aside>}
+        </Fragment>
       ))
     }
   </section>
@@ -62,6 +64,6 @@ const paragraphs = copy.paragraphs.map((paragraph) => ({
 
 <style>
   header {
-    margin-bottom: 4vh;
+    margin-bottom: calc(var(--lh) * 2);
   }
 </style>

@@ -2,11 +2,13 @@
 import { defineConfig } from 'astro/config';
 import yaml from '@rollup/plugin-yaml';
 
+import tailwindcss from '@tailwindcss/vite';
+
 // https://astro.build/config
 export default defineConfig({
   // Placeholder — set this to the real domain before deploying. It is what
   // <link rel="canonical"> and the hreflang alternates are built from.
-  site: 'https://example.com',
+  site: 'https://niamkmovich.dev',
   i18n: {
     defaultLocale: 'be',
     locales: ['be', 'en'],
@@ -18,6 +20,6 @@ export default defineConfig({
   vite: {
     // cv.yaml lives at the repo root and is imported as a module, so editing it
     // hot-reloads the dev server instead of requiring a restart.
-    plugins: [yaml()],
+    plugins: [yaml(), tailwindcss()],
   },
 });

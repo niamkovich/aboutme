@@ -9,6 +9,7 @@ import {
   getProjects,
   getSkills,
   getSummary,
+  telHref,
 } from '../data/cv';
 import { ui, type Locale } from '../i18n/ui';
 import { inlineMarkdown } from '../lib/inline-markdown';
@@ -33,7 +34,7 @@ const languages = getLanguages(locale);
   locale={locale}
   title={`${contact.name} — ${t.cvTitle}`}
   description={t.cvDescription}
-  mode="doc"
+  mode="plain"
   current="cv"
 >
   <header data-col>
@@ -104,12 +105,15 @@ const languages = getLanguages(locale);
           )
         }
         {
-          contact.phone && (
+          contact.phones.length > 0 && (
             <div>
+              {/* One term, one definition per number — a tel: URI cannot hold two. */}
               <dt>{t.contactPhone}</dt>
-              <dd>
-                <a href={`tel:${contact.phone.replace(/\s+/g, '')}`}>{contact.phone}</a>
-              </dd>
+              {contact.phones.map((phone) => (
+                <dd>
+                  <a href={telHref(phone)}>{phone}</a>
+                </dd>
+              ))}
             </div>
           )
         }
@@ -132,10 +136,12 @@ const languages = getLanguages(locale);
 
 <style>
   header {
-    margin-bottom: 1rem;
+    margin-bottom: var(--lh);
   }
 
+  /* The first heading follows the page title, so it needs one line of air
+     rather than the two that separate sections further down. */
   section:first-of-type h2 {
-    margin-top: 1.6em;
+    margin-top: var(--lh);
   }
 </style>
