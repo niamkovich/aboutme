@@ -1,1 +1,77 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+/*
+ * Design tokens ported from the "wqqz.dev" Astro theme
+ * (https://github.com/imwqqz/wqqz.dev, MIT licensed) — see README.
+ */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(99% 0.002 286);
+  --foreground: oklch(21% 0.006 286);
+  --card: oklch(100% 0 0);
+  --card-foreground: oklch(21% 0.006 286);
+  --popover: oklch(100% 0 0);
+  --popover-foreground: oklch(21% 0.006 286);
+  --primary: oklch(21% 0.006 286);
+  --primary-foreground: oklch(98.5% 0 0);
+  --muted: oklch(95.5% 0.002 286);
+  --muted-foreground: oklch(49% 0.012 286);
+  --accent: oklch(54% 0.22 293);
+  --accent-foreground: oklch(98.5% 0 0);
+  --border: oklch(90% 0.004 286);
+  --ring: oklch(54% 0.22 293);
+  --radius: 0.625rem;
+  --font-jetbrains-mono:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: oklch(14.8% 0.004 286);
+  --foreground: oklch(92% 0.004 286);
+  --card: oklch(18.5% 0.005 286);
+  --card-foreground: oklch(92% 0.004 286);
+  --popover: oklch(18.5% 0.005 286);
+  --popover-foreground: oklch(92% 0.004 286);
+  --primary: oklch(92% 0.004 286);
+  --primary-foreground: oklch(16.5% 0.005 286);
+  --muted: oklch(22.5% 0.006 286);
+  --muted-foreground: oklch(65% 0.012 286);
+  --accent: oklch(71% 0.17 293.5);
+  --accent-foreground: oklch(16.5% 0.005 286);
+  --border: oklch(26.8% 0.006 286);
+  --ring: oklch(71% 0.17 293.5);
+}
+
+@theme inline {
+  --font-sans: var(--font-jetbrains-mono);
+  --font-mono: var(--font-jetbrains-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}

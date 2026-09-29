@@ -1,7 +1,7 @@
 ---
 import { formatPeriod, type Entry } from '../data/cv';
 import { inlineMarkdown } from '../lib/inline-markdown';
-import type { Locale } from '../i18n/ui';
+import type { Locale } from '../lib/locale';
 
 interface Props {
   entry: Entry;
@@ -13,37 +13,27 @@ const period = formatPeriod(entry, locale);
 const meta = [entry.subtitle, entry.location].filter(Boolean).join(' · ');
 ---
 
-<article class="entry">
-  <div data-row>
-    <h3 set:html={inlineMarkdown(entry.title)} />
-    {period && <span class="when">{period}</span>}
+<div class="space-y-1.5 border-l-2 border-border/60 pl-4">
+  <div class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+    <h3 class="text-base font-semibold text-foreground" set:html={inlineMarkdown(entry.title)} />
+    {period && <span class="shrink-0 text-xs text-muted-foreground">{period}</span>}
   </div>
 
-  {meta && <p class="meta muted">{meta}</p>}
+  {meta && <p class="text-xs text-muted-foreground">{meta}</p>}
 
-  {entry.summary && <p class="summary" set:html={inlineMarkdown(entry.summary)} />}
+  {
+    entry.summary && (
+      <p class="text-sm text-foreground/80" set:html={inlineMarkdown(entry.summary)} />
+    )
+  }
 
   {
     entry.highlights.length > 0 && (
-      <ul>
+      <ul class="list-inside list-disc space-y-1 text-sm text-foreground/80">
         {entry.highlights.map((item) => (
-          <li set:html={inlineMarkdown(item)} />
+          <li class="text-pretty" set:html={inlineMarkdown(item)} />
         ))}
       </ul>
     )
   }
-</article>
-
-<style>
-  .meta {
-    margin: 0;
-    font-size: 0.875rem;
-    line-height: var(--lh);
-    text-align: left;
-    hyphens: none;
-  }
-
-  .summary {
-    margin: 0;
-  }
-</style>
+</div>

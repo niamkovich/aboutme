@@ -1,0 +1,50 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageSection from '../PageSection.astro';
+import ContactDetails from '../ContactDetails/ContactDetails.astro';
+import { home } from './HomePage.i18n';
+import type { Locale } from '../../lib/locale';
+import { getContact } from '../../data/cv';
+import { inlineMarkdown } from '../../lib/inline-markdown';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = home[locale];
+const contact = getContact(locale);
+
+const paragraphs = copy.paragraphs.map((paragraph) => ({
+  html: inlineMarkdown(paragraph.text),
+  side: paragraph.side,
+}));
+---
+
+<Base locale={locale} title={`${copy.title}`} description={copy.description} path="" current="">
+  <PageSection>
+    <h1 class="mb-2 text-4xl font-bold tracking-tight text-balance md:text-5xl">{copy.title}</h1>
+    <p class="mb-4 text-lg text-muted-foreground md:text-xl">{copy.lede}</p>
+
+    {
+      paragraphs.map((paragraph) => (
+        <>
+          <p
+            class:list={[
+              'text-base leading-relaxed text-pretty text-foreground/85 md:text-lg',
+              paragraph.side ? 'mb-1' : 'mb-4',
+            ]}
+            set:html={paragraph.html}
+          />
+          {paragraph.side && (
+            <p class="mb-4 text-sm text-muted-foreground italic">{paragraph.side}</p>
+          )}
+        </>
+      ))
+    }
+
+    <div class="mt-6">
+      <ContactDetails contact={contact} locale={locale} />
+    </div>
+  </PageSection>
+</Base>

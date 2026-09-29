@@ -1,0 +1,10 @@
+---
+// Shared page shell every page component wraps its content in: a centred,
+// max-width column inside the sticky-nav flex layout from Base.astro.
+---
+
+<section class="container mx-auto px-6 py-16 flex-grow flex flex-col justify-center">
+  <div class="max-w-3xl mx-auto w-full">
+    <slot />
+  </div>
+</section>

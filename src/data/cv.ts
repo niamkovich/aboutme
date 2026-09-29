@@ -1,7 +1,7 @@
 import rawCv from '../../cv.yaml';
-import { beOverlay } from '../i18n/cv.be';
+import { beOverlay } from './cv.be';
 import { unwrap } from '../lib/inline-markdown';
-import type { Locale } from '../i18n/ui';
+import type { Locale } from '../lib/locale';
 
 /* --- Shape of cv.yaml (rendercv format) ---------------------------------- */
 
@@ -39,7 +39,6 @@ interface RawCv {
     headline?: string;
     location?: string;
     email?: string;
-    phone?: string;
     social_networks?: { network: string; username: string }[] | null;
     sections: {
       professional_summary?: string[];
@@ -79,25 +78,7 @@ export interface Contact {
   headline: string;
   location: string;
   email?: string;
-  phones: string[];
   links: { network: string; username: string; href: string }[];
-}
-
-/** cv.yaml keeps every number in one comma-separated field. */
-function splitPhones(value: string | undefined): string[] {
-  if (!value) return [];
-  return value
-    .split(',')
-    .map((phone) => phone.trim())
-    .filter(Boolean);
-}
-
-/**
- * A tel: URI addresses exactly one number, so it gets its own link. Spaces and
- * punctuation are stripped; the leading + is not.
- */
-export function telHref(phone: string): string {
-  return `tel:${phone.replace(/[^\d+]/g, '')}`;
 }
 
 /* --- Helpers -------------------------------------------------------------- */
@@ -167,7 +148,7 @@ function text(value: string | undefined): string | undefined {
 }
 
 /**
- * Belarusian text comes from the overlay in src/i18n/cv.be.ts, keyed by a slug
+ * Belarusian text comes from the overlay in src/data/cv.be.ts, keyed by a slug
  * derived from the entry's own name. Anything the overlay does not translate
  * falls through to the English source, so a missing translation degrades to
  * readable English rather than a blank.
@@ -196,7 +177,7 @@ function localise<T extends string | string[] | undefined>(
 }
 
 const MONTHS: Record<Locale, string[]> = {
-  be: ['студз', 'лют', 'сак', 'крас', 'мая', 'чэрв', 'ліп', 'жн', 'вер', 'кастр', 'ліст', 'снеж'],
+  be: ['Cтудз', 'Лют', 'Сак', 'Крас', 'Трав', 'Чэрв', 'Ліп', 'Жн', 'Вер', 'Кастр', 'Ліст', 'Снеж'],
   en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
 };
 
@@ -229,7 +210,6 @@ export function getContact(locale: Locale): Contact {
     headline: localise(locale, 'meta:headline', 'title', source.headline ?? ''),
     location: localise(locale, 'meta:location', 'title', source.location ?? ''),
     email: source.email,
-    phones: splitPhones(source.phone),
     links: networks.map((entry) => ({
       ...entry,
       href:

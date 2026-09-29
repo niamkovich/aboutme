@@ -1,0 +1,31 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageSection from '../../components/PageSection.astro';
+import BlogList from '../../components/blog/BlogList';
+import { getBlogPosts } from '../../lib/blog-data';
+
+const posts = await getBlogPosts();
+---
+
+<Base
+  locale="be"
+  title="Блёг"
+  description="Нататкі пра мабільную распрацоўку і інструменты, якімі я карыстаюся."
+  path="/blog/"
+  current="blog"
+  translated={false}
+>
+  <PageSection>
+    <h1 class="mb-2 text-4xl font-bold tracking-tight text-balance md:text-5xl">Блёг</h1>
+    <p class="mb-10 text-lg text-muted-foreground md:text-xl">
+      Нататкі пра ўсё што захачу, і што вы мне зробіце?.
+    </p>
+
+    <BlogList
+      posts={posts}
+      searchPlaceholder="Пошук артыкулаў..."
+      noResultsLabel="Нічога не знойдзена."
+      client:load
+    />
+  </PageSection>
+</Base>

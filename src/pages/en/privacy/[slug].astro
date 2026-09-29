@@ -1,0 +1,12 @@
+---
+import PrivacyPolicyPage from '../../../components/Privacy/PrivacyPolicyPage.astro';
+import { getAppSlugs } from '../../../data/apps';
+
+export function getStaticPaths() {
+  return getAppSlugs().map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+---
+
+<PrivacyPolicyPage locale="en" slug={slug} />

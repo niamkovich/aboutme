@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageSection from '../PageSection.astro';
+import AppCard from '../AppCard.astro';
+import { getApps } from '../../data/apps';
+import type { Locale } from '../../lib/locale';
+import { appsPage } from './AppsPage.i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = appsPage[locale];
+const apps = getApps(locale);
+---
+
+<Base locale={locale} title={t.title} description={t.description} path="apps" current="apps">
+  <PageSection>
+    <h1 class="mb-2 text-4xl font-bold tracking-tight text-balance md:text-5xl">{t.title}</h1>
+    <p class="mb-4 text-lg text-muted-foreground md:text-xl">{t.lede}</p>
+
+    <p class="mb-8 text-sm text-muted-foreground italic">{t.placeholderNotice}</p>
+
+    <div class="space-y-4">
+      {apps.map((app) => <AppCard app={app} locale={locale} />)}
+    </div>
+  </PageSection>
+</Base>

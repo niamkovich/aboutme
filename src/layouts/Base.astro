@@ -1,27 +1,52 @@
 ---
-import '@fontsource-variable/alegreya/wght.css';
-import '@fontsource-variable/alegreya/wght-italic.css';
-import '@fontsource/alegreya-sans-sc/500.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/600.css';
+import '@fontsource/jetbrains-mono/700.css';
+import '@fontsource/jetbrains-mono/400-italic.css';
+import '@fontsource/jetbrains-mono/600-italic.css';
 import '../styles/global.css';
 
-import Nav from '../components/Nav.astro';
-import { localePath, LOCALES, LOCALE_TAG, type Locale } from '../i18n/ui';
+import Nav from '../components/Nav/Nav.astro';
+import { localePath, LOCALES, LOCALE_TAG, type Locale, type NavSection } from '../lib/locale';
 
 interface Props {
   locale: Locale;
   title: string;
   description: string;
-  /** 'screen' is the one-page, vertically centred layout; 'doc' scrolls. */
-  mode: 'home' | 'plain';
-  current: '' | 'cv';
+  /** Exact route segment (e.g. '', 'cv', 'apps', `privacy/${slug}`) — drives canonical/hreflang.
+   *  When `translated` is false, this is the full absolute path instead (e.g. `/blog/my-post`). */
+  path: string;
+  /** Which nav item to mark current; distinct from `path` since e.g. every
+   *  privacy sub-page highlights the same "Privacy" nav entry. */
+  current: NavSection;
+  /** false for content with no be/en counterpart (blog posts): skips hreflang
+   *  alternates and the language-switch link, since there's nothing to switch to. */
+  translated?: boolean;
+  ogImage?: string;
+  /** Overrides <html lang> without affecting `locale` (which still drives nav
+   *  chrome). Used by blog posts: chrome stays Belarusian, but a post actually
+   *  written in English still declares its own content language correctly. */
+  htmlLang?: string;
 }
 
-const { locale, title, description, mode, current } = Astro.props;
-const canonical = new URL(localePath(locale, current), Astro.site);
+const {
+  locale,
+  title,
+  description,
+  path,
+  current,
+  translated = true,
+  ogImage,
+  htmlLang,
+} = Astro.props;
+const canonical = translated
+  ? new URL(localePath(locale, path), Astro.site)
+  : new URL(path, Astro.site);
 ---
 
 <!doctype html>
-<html class="h-full bg-white antialiased" lang={LOCALE_TAG[locale]}>
+<html class="h-full" lang={htmlLang ?? LOCALE_TAG[locale]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -29,46 +54,47 @@ const canonical = new URL(localePath(locale, current), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {
-      LOCALES.map((alt) => (
+      translated &&
+        LOCALES.map((alt) => (
+          <link
+            rel="alternate"
+            hreflang={LOCALE_TAG[alt]}
+            href={new URL(localePath(alt, path), Astro.site)}
+          />
+        ))
+    }
+    {
+      translated && (
         <link
           rel="alternate"
-          hreflang={LOCALE_TAG[alt]}
-          href={new URL(localePath(alt, current), Astro.site)}
+          hreflang="x-default"
+          href={new URL(localePath('be', path), Astro.site)}
         />
-      ))
+      )
     }
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href={new URL(localePath('be', current), Astro.site)}
-    />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="theme-color" content="#fffff8" />
-    {
-      /* Skaryna only sets Belarusian headings, so English pages skip the fetch. */
-      locale === 'be' && (
-        <link
-          rel="preload"
-          href="/fonts/skaryna-title.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      )
-    }
+    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#131316" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fcfcfd" />
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const dark = stored
+          ? stored === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', dark);
+      })();
+    </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="flex flex-col min-h-full">
-    <Nav locale={locale} current={current} />
-    <div class="p-6 overflow-auto">
-      <div class="bg-taupe-100 p-6 rounded-xl" data-body={mode}>
-        <main>
-          <slot />
-        </main>
-      </div>
-    </div>
+    <Nav locale={locale} path={path} current={current} translated={translated} />
+    <main class="flex-grow flex flex-col">
+      <slot />
+    </main>
   </body>
 </html>

@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import TableOfContents from '../../components/blog/TableOfContents.astro';
+import { ChevronRight, Calendar, Clock } from '@lucide/astro';
+import { slugifyTag } from '../../lib/tags';
+import { countWords, calculateReadMinutes } from '../../lib/blog-data';
+import '../../styles/blog.css';
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('blog', (p) => !p.data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { title, description, date, tags, ogImage, lang } = post.data;
+
+const { Content, headings } = await render(post);
+const readMinutes = calculateReadMinutes(countWords((post as { body?: string }).body ?? ''));
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString(lang === 'be' ? 'be-BY' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Base
+  locale="be"
+  htmlLang={lang}
+  title={title}
+  description={description}
+  path={`/blog/${post.id}/`}
+  current="blog"
+  translated={false}
+  ogImage={ogImage}
+>
+  <div class="mx-auto w-full max-w-6xl flex-1 px-5 py-10 sm:px-6 sm:py-14">
+    <div class="mx-auto xl:grid xl:grid-cols-[minmax(0,1fr)_15rem] xl:gap-14">
+      <div class="min-w-0">
+        <nav aria-label="Breadcrumb" class="mb-6 print:hidden">
+          <ol class="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+            <li class="flex items-center gap-1">
+              <a href="/blog/" class="transition-colors hover:text-foreground"> Блог </a>
+            </li>
+            <li class="flex items-center gap-1">
+              <ChevronRight size={12} class="opacity-60" aria-hidden="true" />
+              <span aria-current="page" class="font-medium text-foreground">
+                {title}
+              </span>
+            </li>
+          </ol>
+        </nav>
+
+        <header>
+          <h1 class="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">{title}</h1>
+          {
+            description && (
+              <p class="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
+                {description}
+              </p>
+            )
+          }
+          <div
+            class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground"
+          >
+            <span class="flex items-center gap-1.5">
+              <Calendar size={13} aria-hidden="true" />
+              <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
+            </span>
+            <span class="flex items-center gap-1.5">
+              <Clock size={13} aria-hidden="true" />
+              <span>{readMinutes} хв чытання</span>
+            </span>
+          </div>
+          {
+            tags.length > 0 && (
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                {tags.map((tag) => (
+                  <a
+                    href={`/blog/tags/${slugifyTag(tag)}/`}
+                    class="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-0.5 font-mono text-[0.6875rem] text-muted-foreground transition-colors hover:border-accent/50 hover:text-accent"
+                  >
+                    <span class="text-accent/70">#</span>
+                    {tag}
+                  </a>
+                ))}
+              </div>
+            )
+          }
+        </header>
+
+        <article class="prose mt-8 max-w-none">
+          <Content />
+        </article>
+      </div>
+
+      {
+        headings.length > 0 && (
+          <aside class="hidden xl:block">
+            <div class="sticky top-24">
+              <TableOfContents headings={headings} />
+            </div>
+          </aside>
+        )
+      }
+    </div>
+  </div>
+</Base>
+
+<script
+  is:inline
+  type="application/ld+json"
+  set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description,
+    datePublished: date.toISOString(),
+    articleSection: tags,
+  })}
+/>

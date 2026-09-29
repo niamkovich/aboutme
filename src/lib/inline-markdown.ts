@@ -40,18 +40,10 @@ export function inlineMarkdown(value: string): string {
     if (!isSafeHref(href)) return text;
     const external = /^https?:/i.test(href);
     const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : '';
-    return `<a href="${escapeHtml(href)}"${attrs}>${text}</a>`;
+    return `<a class="underline underline-offset-2 decoration-accent/50 hover:text-accent hover:decoration-accent transition-colors" href="${escapeHtml(href)}"${attrs}>${text}</a>`;
   });
 
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
   return html;
-}
-
-/** Strips markdown down to plain text — for <title>, meta descriptions, etc. */
-export function plainText(value: string): string {
-  return unwrap(value)
-    .replace(/\[([^\]]+)\]\([^)\s]+\)/g, '$1')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\n/g, ' ');
 }

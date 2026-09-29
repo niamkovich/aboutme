@@ -1,0 +1,126 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageSection from '../../../components/PageSection.astro';
+import { getBlogPosts } from '../../../lib/blog-data';
+import { getAllTags, slugifyTag } from '../../../lib/tags';
+import { ChevronRight } from '@lucide/astro';
+import type { Post } from '../../../lib/search';
+import { pluralBe } from '../../../lib/plural';
+
+export async function getStaticPaths() {
+  const posts = await getBlogPosts();
+  const tags = getAllTags(posts);
+
+  return tags.map((tagInfo) => {
+    const matchingPosts = posts.filter((post) =>
+      post.tags?.some((t) => slugifyTag(t) === tagInfo.slug),
+    );
+    return {
+      params: { tag: tagInfo.slug },
+      props: { tag: tagInfo.name, posts: matchingPosts },
+    };
+  });
+}
+
+interface Props {
+  tag: string;
+  posts: Post[];
+}
+
+const { tag, posts } = Astro.props;
+
+function formatDisplayDate(dateStr?: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+  return date.toLocaleDateString('be-BY', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+---
+
+<Base
+  locale="be"
+  title={`#${tag} — Тэгі`}
+  description={`Публікацыі блога з тэгам ${tag}.`}
+  path={`/blog/tags/${slugifyTag(tag)}/`}
+  current="blog"
+  translated={false}
+>
+  <PageSection>
+    <nav aria-label="Breadcrumb" class="mb-6">
+      <ol class="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+        <li class="flex items-center gap-1.5">
+          <a href="/blog/" class="transition-colors hover:text-foreground"> Блог </a>
+        </li>
+        <li class="flex items-center gap-1.5">
+          <ChevronRight size={12} class="opacity-60" />
+          <a href="/blog/tags/" class="transition-colors hover:text-foreground"> Тэгі </a>
+        </li>
+        <li class="flex items-center gap-1.5">
+          <ChevronRight size={12} class="opacity-60" />
+          <span aria-current="page" class="font-medium text-foreground">
+            {tag}
+          </span>
+        </li>
+      </ol>
+    </nav>
+
+    <header class="mb-10">
+      <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        <span class="text-accent">#</span>{tag}
+      </h1>
+      <p class="mt-3 text-base text-muted-foreground">
+        {posts.length}
+        {pluralBe(posts.length, ['публікацыя', 'публікацыі', 'публікацый'])} з тэгам "{tag}".
+      </p>
+    </header>
+
+    <div class="space-y-10 sm:space-y-12">
+      {
+        posts.map((post) => (
+          <article class="group">
+            <div class="flex items-start justify-between gap-6 sm:gap-8">
+              <div class="min-w-0 flex-1">
+                <h2 class="text-lg font-bold tracking-tight text-balance text-foreground transition-colors group-hover:text-primary sm:text-xl">
+                  <a href={`/blog/${post.slug}/`} class="hover:text-primary">
+                    {post.title}
+                  </a>
+                </h2>
+                <p class="mb-3 mt-2 text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">
+                  {post.excerpt}
+                </p>
+                {post.tags && post.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1.5">
+                    {post.tags.map((t) => (
+                      <a
+                        href={`/blog/tags/${slugifyTag(t)}/`}
+                        class="inline-flex items-center gap-1 rounded-md border border-border/60 bg-card/60 px-2 py-0.5 font-mono text-xs text-muted-foreground transition-colors hover:border-accent/40 hover:text-accent"
+                      >
+                        <span class="text-accent/70">#</span>
+                        <span>{t}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div class="shrink-0 whitespace-nowrap pt-0.5 text-right">
+                <time class="block text-xs text-muted-foreground sm:text-sm">
+                  {formatDisplayDate(post.date)}
+                </time>
+                {typeof post.readMinutes === 'number' && (
+                  <span class="mt-0.5 block text-xs text-muted-foreground/70">
+                    {post.readMinutes} хв чытання
+                  </span>
+                )}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </PageSection>
+</Base>

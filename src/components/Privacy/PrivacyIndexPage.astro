@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageSection from '../PageSection.astro';
+import { getApps } from '../../data/apps';
+import { localePath, type Locale } from '../../lib/locale';
+import { privacyPage } from './Privacy.i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = privacyPage[locale];
+const apps = getApps(locale);
+---
+
+<Base
+  locale={locale}
+  title={t.indexTitle}
+  description={t.indexDescription}
+  path="privacy"
+  current="privacy"
+>
+  <PageSection>
+    <h1 class="mb-2 text-4xl font-bold tracking-tight text-balance md:text-5xl">{t.indexTitle}</h1>
+    <p class="mb-8 text-lg text-muted-foreground md:text-xl">{t.indexLede}</p>
+
+    <ul class="space-y-2">
+      {
+        apps.map((app) => (
+          <li>
+            <a
+              href={localePath(locale, `privacy/${app.slug}`)}
+              class="font-medium text-foreground underline underline-offset-2 decoration-accent/50 transition-colors hover:text-accent hover:decoration-accent"
+            >
+              {app.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </PageSection>
+</Base>

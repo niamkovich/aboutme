@@ -1,0 +1,248 @@
+/*
+ * Blog post typography and table-of-contents styling — ported from the
+ * "wqqz.dev" Astro theme (https://github.com/imwqqz/wqqz.dev, MIT). Only
+ * loaded on /blog pages (imported directly in each page under src/pages/blog/).
+ */
+@reference "./global.css";
+
+@layer components {
+  .prose {
+    color: var(--color-foreground);
+    max-width: none;
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .prose h1 {
+    margin-top: 0;
+    margin-bottom: 0.888889em;
+    font-size: 2.25em;
+    font-weight: 800;
+    line-height: 1.111111;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground);
+  }
+
+  .prose h2 {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-size: 1.5em;
+    font-weight: 700;
+    line-height: 1.333333;
+    letter-spacing: -0.01em;
+    color: var(--color-foreground);
+  }
+
+  .prose h3 {
+    margin-top: 1.6em;
+    margin-bottom: 0.6em;
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--color-foreground);
+  }
+
+  .prose h4 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--color-foreground);
+  }
+
+  .prose p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+  }
+
+  .prose a {
+    color: var(--color-foreground);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--color-muted-foreground);
+    text-underline-offset: 2px;
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
+  }
+
+  .prose a:hover {
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
+  }
+
+  .prose strong {
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  .prose :where(code):not(pre code) {
+    background-color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.8125em;
+    font-weight: 500;
+    font-family: var(--font-jetbrains-mono);
+    color: var(--color-foreground);
+  }
+
+  .prose :where(code):not(pre code)::before,
+  .prose :where(code):not(pre code)::after {
+    content: none;
+  }
+
+  .prose ul {
+    list-style-type: disc;
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-inline-start: 1.625em;
+  }
+
+  .prose ol {
+    list-style-type: decimal;
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-inline-start: 1.625em;
+  }
+
+  .prose ul > li::marker,
+  .prose ol > li::marker {
+    color: var(--color-muted-foreground);
+  }
+
+  .prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .prose li > p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .prose hr {
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-color: var(--color-border);
+  }
+
+  .prose table {
+    display: block;
+    width: 100%;
+    margin: 2em 0;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+
+  .prose thead th {
+    background-color: var(--color-muted);
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  .prose blockquote {
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+    padding-inline-start: 1em;
+    border-inline-start: 0.25rem solid var(--color-border);
+    color: var(--color-muted-foreground);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .prose .footnotes {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in oklab, var(--color-border) 40%, transparent);
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+  }
+
+  .prose .footnotes ol {
+    padding-left: 1.25rem;
+  }
+
+  .prose .footnotes li {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose .footnote-backref {
+    text-decoration: none;
+  }
+
+  .toc {
+    padding: 0 0 0 0.75rem;
+    position: relative;
+    font-size: 0.9rem;
+  }
+
+  .toc-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-muted-foreground);
+    margin-bottom: 0.25rem;
+  }
+
+  .toc-list,
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc li {
+    list-style: none;
+    margin: 0.15rem 0;
+    padding: 0;
+  }
+
+  .toc a {
+    color: var(--color-muted-foreground);
+    font-weight: 300;
+    line-height: 1.35;
+    text-decoration: none;
+    display: block;
+    padding: 2px 0 2px 0.6rem;
+    border-left: 1px solid color-mix(in oklab, var(--color-border) 55%, transparent);
+    white-space: normal;
+    overflow-wrap: break-word;
+    transition:
+      color 120ms ease,
+      border-color 120ms ease;
+  }
+
+  .toc a:hover {
+    color: var(--color-foreground);
+  }
+
+  .toc a[aria-current='true'] {
+    color: var(--color-accent);
+    font-weight: 500;
+    border-left-color: var(--color-accent);
+  }
+
+  .toc ul ul {
+    margin-left: 0.75rem;
+  }
+}
+
+@layer utilities {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    scroll-margin-top: 90px;
+  }
+}

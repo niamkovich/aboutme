@@ -2,10 +2,11 @@
 
 Personal site — Astro, static output, bilingual (Belarusian default, English at `/en/`).
 
-The design is imported from the Claude Design project
-`213fa21b-1040-4f44-bcc2-5c2893846ebd` (`index.dc.html`). Its `support.js` runtime
-was not carried over: the page declared no dynamic logic, so it ports to plain
-static HTML.
+The visual design (color tokens, dark mode, typography) is ported from the
+[wqqz.dev](https://github.com/imwqqz/wqqz.dev) Astro theme (MIT licensed).
+Only its design tokens and layout patterns were carried over — this site's
+content structure, i18n, routing, and pages (About, CV, Apps, Contact, per-app
+Privacy policies) are original.
 
 ## Commands
 
@@ -31,107 +32,158 @@ rendercv-format file that generates the PDF. It is imported as a module, so
 editing it hot-reloads the dev server. Everything on `/cv` and `/en/cv` comes
 from it: dates, structure, and the English prose.
 
-**`src/i18n/cv.be.ts`** translates that prose into Belarusian. Entries are keyed
-by a slug derived from each item's own name (`project:smart-caravan`,
-`experience:akveo`, …). Anything not translated falls back to the English text
-from `cv.yaml`, and `npm run dev` logs a warning naming the missing key — so
-adding a job to `cv.yaml` never breaks the build, it just shows up in English
-until you add the translation.
+**`src/data/cv.be.ts`** translates that prose into Belarusian, sitting next to
+`cv.ts` since it's the only thing that reads it. Entries are keyed by a slug
+derived from each item's own name (`project:smart-caravan`, `experience:akveo`,
+…). Anything not translated falls back to the English text from `cv.yaml`, and
+`npm run dev` logs a warning naming the missing key — so adding a job to
+`cv.yaml` never breaks the build, it just shows up in English until you add
+the translation.
 
 Fields that should stay identical in both languages — company names, technology
 lists — are listed in that entry's `same: [...]` rather than copied, so the
 English text in `cv.yaml` stays the only copy and the warning stays quiet. A
 clean `npm run dev` console means nothing is accidentally untranslated.
 
-**`src/i18n/home.ts`** holds the hand-written home page copy in both languages.
-It is prose, not generated from `cv.yaml`. Contact details are written as
-`{email}`, `{phone}`, `{linkedin}`, `{github}` placeholders and filled in from
-`cv.yaml` at build time.
+**`src/components/` follows one rule: a component that owns localized strings
+gets its own directory, alongside its `ComponentName.i18n.ts`; a component
+that doesn't stays flat at the top level.** So `Nav.astro` + `Nav.i18n.ts`
+live in `components/Nav/`, and the same for `HomePage`, `CvPage`, `AppsPage`,
+`ContactPage`, `ContactDetails`. `components/Privacy/` is the one
+two-component case — `PrivacyIndexPage.astro` and `PrivacyPolicyPage.astro`
+share `Privacy.i18n.ts`, so both live there with it. Everything with no copy
+of its own — `AppCard.astro`, `CvEntry.astro`, `LabelledGrid.astro`,
+`PageSection.astro` — stays at `components/` root; `AppCard.astro` reads
+`AppsPage`'s copy (`./AppsPage/AppsPage.i18n`) without owning any of its own.
+Each `*.i18n.ts` exports a `Record<Locale, ...Copy>`, same shape throughout.
+There's no shared "common strings" file: a string needed in two places (like
+the placeholder-content notice) is just written twice rather than pulled
+through an indirection only two places use.
 
-**`src/i18n/ui.ts`** holds nav labels, section headings and meta descriptions.
+**`src/lib/locale.ts`** holds the one truly cross-cutting piece — `Locale`,
+`NavSection`, `localePath()`, `otherLocale()` — used by the data layer,
+`Base.astro`, and every `*.i18n.ts` file above. It has no translated strings
+of its own, which is why it lives in `src/lib/` with the other framework-free
+utilities (`tags.ts`, `search.ts`, …) instead of next to any one component.
 
-## Typography
+**`src/data/apps.ts`** holds the apps section: one entry per app (slug, store
+links, per-locale name/tagline/description and privacy-policy body). Content
+is currently placeholder — no real apps are published yet. `getApps()` backs
+`/apps` and `/privacy`; `getApp()` backs each `/privacy/<slug>` page.
 
-`src/styles/global.css` follows
-[the-proportional-web](https://github.com/owickstrom/the-proportional-web) —
-Bringhurst's _Elements of Typographic Style_ applied to the web.
+## Pages
 
-**One line-height is the atom.** `--lh: 1.2rem` is the unit of vertical rhythm,
-and every vertical measure in the file is an integer multiple of it, so every
-line of text on every page sits on the same baseline grid. Horizontal measures
-are all in `ch`. The only `px` in the file are the root font size and the
-hairline rule.
+| Route (`be`, default) | Route (`en`)         | Content                                                                                         |
+| --------------------- | -------------------- | ----------------------------------------------------------------------------------------------- |
+| `/`                   | `/en/`               | About (`HomePage.astro`)                                                                        |
+| `/cv`                 | `/en/cv`             | CV (`CvPage.astro`)                                                                             |
+| `/apps`               | `/en/apps`           | Apps list (`AppsPage.astro`)                                                                    |
+| `/contact`            | `/en/contact`        | Contact details (`ContactPage.astro`)                                                           |
+| `/privacy`            | `/en/privacy`        | Index of per-app policies                                                                       |
+| `/privacy/<slug>`     | `/en/privacy/<slug>` | One privacy policy per app, statically generated via `getStaticPaths()` from `src/data/apps.ts` |
 
-**To loosen or tighten the whole document, change `--lh`. Nothing else.** The
-type scale, every margin and the grid all follow from it.
+**`/blog`** is not part of the be/en split — posts are single-language (see
+below), so it lives at an unprefixed path with no locale counterpart.
+`Base.astro`'s `translated={false}` prop skips hreflang alternates and the
+language-switch link for these pages.
 
-Consequences worth knowing before editing:
+| Route              | Content                                         |
+| ------------------ | ----------------------------------------------- |
+| `/blog`            | Post list with live search and tag filter       |
+| `/blog/<slug>`     | One post, rendered from `src/content/blog/*.md` |
+| `/blog/tags`       | All tags with post counts                       |
+| `/blog/tags/<tag>` | Posts filtered by tag                           |
 
-- Nothing is sized against the viewport. The root steps `16px → 14px` at 480px
-  and that is the entire responsive type story — no `clamp()`, no `vh`, no
-  per-breakpoint font sizes.
-- Paragraphs are separated by a `3ch` first-line indent, not a blank line
-  (`p + p`). A paragraph directly after a heading is flush and gets no extra
-  space, since the heading already sets it.
-- Text is justified with `hyphens: auto`. English hyphenates; Belarusian does
-  not, because no browser ships a Belarusian dictionary — so Belarusian
-  paragraphs show wider word spacing. That is a known, accepted trade-off. To
-  undo it, drop `text-align: justify` from the `:is(p, li, dd)` rule.
-- Any new vertical spacing must be `calc(var(--lh) * n)`. If you need a
-  fractional value, pair it with its complement so the block still advances a
-  whole number of lines — `h2` does this with `0.25` padding and `0.75` margin.
-- Borders that sit in the flow break the grid: a `1.5px` border snaps to `1px`
-  at DPR 1, so the block ends up half a pixel short and everything below drifts.
-  The rule under `h2` is drawn with an inset `box-shadow`, which takes no layout
-  space at any pixel ratio. Do the same for any new horizontal rule.
-- `[data-row]` uses `align-items: start`, not `baseline`. Baseline-aligning two
-  different families at different sizes makes the row about a pixel taller than
-  one line, and that error accumulates down the page.
+## Design system
 
-The attribute hooks the layout and the Astro components share:
+`src/styles/global.css` defines the color palette as CSS custom properties in
+`oklch()`, light values under `:root` and dark values under `.dark` (see
+`@custom-variant dark` at the top of the file). `src/layouts/Base.astro` reads
+`localStorage`/`prefers-color-scheme` in an inline script and toggles the
+`.dark` class on `<html>` before first paint, so there's no flash of the wrong
+theme. There is no visible light/dark toggle — it follows the system
+preference, matching the source theme.
 
-- `[data-body="screen"]` — vertically centred; used for the home page. At a
-  fixed rem size it scrolls on a short window rather than shrinking to fit.
-- `[data-body="doc"]` — top-aligned, scrolls. Used for the CV. Both modes now
-  share one type scale; only the alignment differs.
-- `[data-col]` — the measure, `--measure: 66ch`.
-- `[data-side]` — margin notes. They float into a gutter of `--side-width` plus
-  `--side-gap`, pulled right by exactly that sum, so the sidenote column no
-  longer depends on how wide the measure is. Under 900px they collapse to
-  left-bordered blocks inline with the text.
+Components use semantic Tailwind utilities (`bg-background`, `text-foreground`,
+`text-muted-foreground`, `bg-card`, `border-border`, `text-accent`, …) mapped
+from those tokens via `@theme inline`, never raw colors — that's what makes
+dark mode work without a single `dark:` prefixed class anywhere.
 
-These styles are deliberately **global**, not component-scoped: Astro's scoping
-would break the attribute-selector media queries silently.
-
-To check the grid after a change, overlay it:
-
-```css
-[data-body] {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    rgb(220 0 0 / 0.35) 0 1px,
-    transparent 1px var(--lh)
-  );
-}
-```
-
-Every line of text should sit in the same position between two red rules the
-whole way down the page.
+Section headers use a shared pattern: `text-xs font-semibold text-muted-foreground
+uppercase tracking-wider`, optionally with a small `@lucide/astro` icon.
+Repeated blocks (contact links, skill/language grids, CV entries) are their
+own components — `ContactDetails.astro`, `LabelledGrid.astro`, `CvEntry.astro`
+— rather than styled inline more than once.
 
 ## Fonts
 
-- **Alegreya** (body) and **Alegreya Sans SC** (nav, small-caps labels) come from
-  `@fontsource`, self-hosted, with the Cyrillic subsets the Belarusian text needs.
-- **Skaryna Title** (`public/fonts/skaryna-title.woff2`) sets Belarusian headings.
-  It is a 29 KB subset of the original TTF from the design project, limited to
-  Latin, Cyrillic and common punctuation. It is a historical Belarusian titling
-  face with unicase letterforms — deliberate in Cyrillic, broken-looking in
-  Latin — so `html[lang="en"]` falls back to Alegreya's own capitals for headings.
+**JetBrains Mono**, self-hosted via `@fontsource/jetbrains-mono` (weights 400,
+500, 600, 700 plus 400/600 italic), is the only font — matching the source
+theme's monospace-everywhere look. The package's per-weight CSS already
+includes a Cyrillic `unicode-range`, so Belarusian text needs no extra setup.
 
-## Before deploying
+## Blog
 
-Set `site` in `astro.config.mjs` to the real domain. Canonical URLs and the
-`hreflang` alternates are built from it.
+Mechanically ported from the [wqqz.dev](https://github.com/imwqqz/wqqz.dev)
+theme's archive/blog feature (MIT licensed), adapted to this site's routing
+and renamed `archives` → `blog` throughout.
+
+Belarusian is the site's main language, so blog chrome (nav, breadcrumbs,
+search UI, "N min read", tag/date formatting) is hardcoded Belarusian rather
+than pulled from the `*.i18n.ts` system used elsewhere — the blog isn't
+translated (see below), so there's no second language for it to switch to.
+A post can still be written in English (`lang: en`); that only changes its
+own `<html lang>` and date formatting, not the surrounding chrome.
+
+**Writing a post**: add a markdown file to `src/content/blog/`. Frontmatter
+(validated by `src/content.config.ts`):
+
+```yaml
+title: string
+description: string
+date: 2026-01-01
+tags: [string] # optional, default []
+draft: false # optional — drafts are excluded from getBlogPosts()
+lang: be # 'be' | 'en', default 'be' — sets that post's <html lang>
+ogImage: string # optional
+```
+
+`src/content/blog/welcome-to-the-blog.md` is a demo post — delete it once you
+have real content.
+
+**Markdown**: posts render through Astro's own default processor — no custom
+remark/rehype pipeline. That still covers GFM (tables, task lists,
+strikethrough, autolinks, footnotes) and stable heading `id`s (needed for the
+TOC's `#anchor` links) out of the box. `astro.config.mjs` sets
+`markdown: { syntaxHighlight: false }`, so code fences render as plain
+`<pre><code>` with no highlighting. The source theme's callouts (`> [!TIP]`),
+tabbed code fences, and Expressive Code/KaTeX were all removed as unneeded —
+see git history if any of that is ever wanted back.
+
+**Search & tags**: `/blog`'s `BlogList` (`src/components/blog/`) is a React
+island (`client:load`) — the only React on this otherwise framework-free
+site. Search is a client-side ranked token match over title/excerpt/tags
+(`src/lib/search.ts`, ported) with no index build step, plus a ⌘K/Ctrl+K
+overlay (`SearchOverlay.tsx`). Tags come from `src/lib/tags.ts` (ported);
+`/blog/tags` and `/blog/tags/<tag>` are plain server-rendered Astro pages.
+
+**Table of contents**: `TableOfContents.astro` builds a two-level (h2/h3)
+tree from the post's headings and highlights the current section via
+`IntersectionObserver` — a from-scratch, simpler replacement for the source
+theme's `astro-toc` package + manual scroll-position script.
+
+## Deploying
 
 `npm run build` emits a plain static `dist/` — deployable to Netlify, Vercel,
 Cloudflare Pages or GitHub Pages with no adapter.
+
+Deployment to GitHub Pages is automated by `.github/workflows/deploy.yml` on
+every push to `main`. It builds, runs `npm run verify`, and publishes `dist/`
+via `actions/deploy-pages`. Two things must stay in sync:
+
+- `site` in `astro.config.mjs` and the single line in `public/CNAME` must hold
+  the same custom domain (currently `niamkovich.dev`) — the former drives
+  canonical/hreflang URLs, the latter tells GitHub Pages which domain to serve.
+- Repo Settings → Pages → Source must be set to "GitHub Actions" (one-time,
+  can't be scripted from the repo), and DNS for the domain must point at
+  GitHub Pages.

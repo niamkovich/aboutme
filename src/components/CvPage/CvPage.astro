@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageSection from '../PageSection.astro';
+import CvEntry from '../CvEntry.astro';
+import ContactDetails from '../ContactDetails/ContactDetails.astro';
+import LabelledGrid from '../LabelledGrid.astro';
+import {
+  getContact,
+  getEducation,
+  getExperience,
+  getLanguages,
+  getProjects,
+  getSkills,
+  getSummary,
+} from '../../data/cv';
+import type { Locale } from '../../lib/locale';
+import { cvPage } from './CvPage.i18n';
+import { inlineMarkdown } from '../../lib/inline-markdown';
+import { Briefcase, GraduationCap, Languages, Rocket, Shield } from '@lucide/astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = cvPage[locale];
+
+const contact = getContact(locale);
+const summary = getSummary(locale);
+const skills = getSkills(locale);
+const projects = getProjects(locale);
+const experience = getExperience(locale);
+const education = getEducation(locale);
+const languages = getLanguages(locale);
+
+const sectionLabel =
+  'mb-4 flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider';
+---
+
+<Base
+  locale={locale}
+  title={`${contact.name} — ${t.title}`}
+  description={t.description}
+  path="cv"
+  current="cv"
+>
+  <PageSection>
+    <h1 class="mb-2 text-4xl font-bold tracking-tight text-balance md:text-5xl">{contact.name}</h1>
+    <p class="mb-10 text-lg text-muted-foreground md:text-xl">{contact.headline}</p>
+
+    <div class="mb-10">
+      <h2 class="mb-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        {t.sectionContact}
+      </h2>
+      <ContactDetails contact={contact} locale={locale} />
+    </div>
+
+    <div class="mb-10">
+      <h2 class="mb-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        {t.sectionSummary}
+      </h2>
+      {
+        summary.map((paragraph) => (
+          <p
+            class="text-base leading-relaxed text-pretty text-foreground/85"
+            set:html={inlineMarkdown(paragraph)}
+          />
+        ))
+      }
+    </div>
+
+    <div class="mb-10">
+      <h2 class={sectionLabel}>
+        <Shield size={14} />
+        <span>{t.sectionSkills}</span>
+      </h2>
+      <LabelledGrid items={skills} badges />
+    </div>
+
+    <div class="mb-10">
+      <h2 class={sectionLabel}>
+        <Rocket size={14} />
+        <span>{t.sectionProjects}</span>
+      </h2>
+      <div class="space-y-6">
+        {projects.map((entry) => <CvEntry entry={entry} locale={locale} />)}
+      </div>
+    </div>
+
+    <div class="mb-10">
+      <h2 class={sectionLabel}>
+        <Briefcase size={14} />
+        <span>{t.sectionExperience}</span>
+      </h2>
+      <div class="space-y-6">
+        {experience.map((entry) => <CvEntry entry={entry} locale={locale} />)}
+      </div>
+    </div>
+
+    <div class="mb-10">
+      <h2 class={sectionLabel}>
+        <GraduationCap size={14} />
+        <span>{t.sectionEducation}</span>
+      </h2>
+      <div class="space-y-6">
+        {education.map((entry) => <CvEntry entry={entry} locale={locale} />)}
+      </div>
+    </div>
+
+    <div>
+      <h2 class={sectionLabel}>
+        <Languages size={14} />
+        <span>{t.sectionLanguages}</span>
+      </h2>
+      <LabelledGrid items={languages} />
+    </div>
+  </PageSection>
+</Base>

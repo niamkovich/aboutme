@@ -1,0 +1,107 @@
+---
+import {
+  localePath,
+  otherLocale,
+  LOCALE_NAME,
+  type Locale,
+  type NavSection,
+} from '../../lib/locale';
+import { nav as navCopy } from './Nav.i18n';
+
+interface Props {
+  locale: Locale;
+  /** Exact route segment, used to land the language switch on the equivalent page. */
+  path: string;
+  current: NavSection;
+  /** false hides the language switch — used for blog pages, which have no be/en counterpart. */
+  translated?: boolean;
+}
+
+const { locale, path, current, translated = true } = Astro.props;
+const t = navCopy[locale];
+const other = otherLocale(locale);
+
+const navItems: { section: NavSection; path: string; label: string; absolute?: boolean }[] = [
+  { section: '', path: '', label: t.about },
+  { section: 'cv', path: 'cv', label: t.cv },
+  { section: 'apps', path: 'apps', label: t.apps },
+  // The blog isn't translated (single-language posts), so it lives outside
+  // the locale prefix and is linked to directly rather than via localePath().
+  { section: 'blog', path: 'blog', label: t.blog, absolute: true },
+  { section: 'contact', path: 'contact', label: t.contact },
+];
+
+function navHref(item: (typeof navItems)[number]): string {
+  return item.absolute ? `/${item.path}/` : localePath(locale, item.path);
+}
+
+function linkClass(active: boolean): string {
+  return `text-sm transition-colors ${active ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'}`;
+}
+---
+
+{
+  /* Fixed nav is removed from flow, so an invisible copy of the same markup
+     reserves its height in normal flow — this tracks the real bar's height
+     (which varies: one row on sm+, wraps to two on narrow screens) instead
+     of guessing a fixed padding-top for <main>. Not reachable by screen
+     readers or keyboard (aria-hidden + visibility:hidden). */
+}
+<div aria-hidden="true" class="invisible">
+  <div class="container mx-auto px-6">
+    <div
+      class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-3 sm:h-16 sm:flex-nowrap sm:justify-between sm:py-0"
+    >
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        {navItems.map((item) => <span>{item.label}</span>)}
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <span>{t.privacy}</span>
+        {translated && <span>{LOCALE_NAME[other]}</span>}
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/60 backdrop-blur-md">
+  <div class="container mx-auto px-6">
+    <div
+      class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-3 sm:h-16 sm:flex-nowrap sm:justify-between sm:py-0"
+    >
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        {
+          navItems.map((item) => (
+            <a
+              href={navHref(item)}
+              class={linkClass(current === item.section)}
+              aria-current={current === item.section ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <a
+          href={localePath(locale, 'privacy')}
+          class={linkClass(current === 'privacy')}
+          aria-current={current === 'privacy' ? 'page' : undefined}
+        >
+          {t.privacy}
+        </a>
+        {
+          translated && (
+            <a
+              href={localePath(other, path)}
+              hreflang={other}
+              title={t.switchLanguage}
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {LOCALE_NAME[other]}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</nav>

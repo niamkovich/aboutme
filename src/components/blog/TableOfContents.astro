@@ -1,0 +1,123 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface TocItem extends Heading {
+  children: TocItem[];
+}
+
+interface Props {
+  headings: Heading[];
+  label?: string;
+}
+
+const { headings, label = 'На гэтай старонцы' } = Astro.props;
+
+// Two-level tree: h2s as top items, h3s nested under the preceding h2.
+// Deeper headings (h4+) are left out of the TOC to keep it scannable.
+function buildTree(items: Heading[]): TocItem[] {
+  const roots: TocItem[] = [];
+  let currentH2: TocItem | null = null;
+  for (const heading of items) {
+    if (heading.depth === 2) {
+      currentH2 = { ...heading, children: [] };
+      roots.push(currentH2);
+    } else if (heading.depth === 3 && currentH2) {
+      currentH2.children.push({ ...heading, children: [] });
+    }
+  }
+  return roots;
+}
+
+const tree = buildTree(headings.filter((h) => h.depth >= 2 && h.depth <= 3));
+---
+
+{
+  tree.length > 0 && (
+    <nav class="toc" id="toc-root" aria-label={label}>
+      <p class="toc-title">{label}</p>
+      <ul class="toc-list">
+        {tree.map((item) => (
+          <li>
+            <a href={`#${item.slug}`}>{item.text}</a>
+            {item.children.length > 0 && (
+              <ul>
+                {item.children.map((child) => (
+                  <li>
+                    <a href={`#${child.slug}`}>{child.text}</a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<script>
+  // Highlights the TOC entry for whichever heading is currently in view, and
+  // smooth-scrolls to a heading when its TOC link is clicked.
+  function initToc() {
+    const tocRoot = document.getElementById('toc-root');
+    if (!tocRoot) return;
+
+    const links = Array.from(tocRoot.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
+    if (links.length === 0) return;
+
+    const linkById = new Map(
+      links.map((a) => [decodeURIComponent(a.getAttribute('href')!.slice(1)), a]),
+    );
+    const headingEls = Array.from(linkById.keys())
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    let current: HTMLAnchorElement | null = null;
+    const setActive = (id: string | null) => {
+      const next = id ? (linkById.get(id) ?? null) : null;
+      if (next === current) return;
+      current?.removeAttribute('aria-current');
+      next?.setAttribute('aria-current', 'true');
+      current = next;
+    };
+
+    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    tocRoot.addEventListener('click', (e) => {
+      const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!a) return;
+      const id = decodeURIComponent(a.getAttribute('href')!.slice(1));
+      const target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
+      history.replaceState(null, '', `#${id}`);
+      setActive(id);
+    });
+
+    const nav = document.querySelector('nav.fixed');
+    const headerOffset = (nav?.getBoundingClientRect().height ?? 64) + 16;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length > 0) {
+          const topMost = visible.sort(
+            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+          )[0];
+          setActive(topMost.target.id);
+        }
+      },
+      { rootMargin: `-${headerOffset}px 0px -70% 0px`, threshold: 0 },
+    );
+
+    headingEls.forEach((el) => observer.observe(el));
+  }
+
+  initToc();
+  document.addEventListener('astro:page-load', initToc);
+</script>

@@ -1,0 +1,51 @@
+---
+import { type Contact } from '../../data/cv';
+import type { Locale } from '../../lib/locale';
+import { contactDetails } from './ContactDetails.i18n';
+
+interface Props {
+  contact: Contact;
+  locale: Locale;
+}
+
+const { contact, locale } = Astro.props;
+const t = contactDetails[locale];
+
+interface ContactItem {
+  label: string;
+  text: string;
+  href: string;
+  external?: boolean;
+}
+
+const items: ContactItem[] = [
+  ...(contact.email
+    ? [{ label: t.contactEmail, text: contact.email, href: `mailto:${contact.email}` }]
+    : []),
+  ...contact.links.map((link) => ({
+    label: link.network.toLowerCase(),
+    text: link.username,
+    href: link.href,
+    external: true,
+  })),
+];
+---
+
+<div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+  {
+    items.map((item) => (
+      <div>
+        [{item.label}:{' '}
+        <a
+          href={item.href}
+          target={item.external ? '_blank' : undefined}
+          rel={item.external ? 'noopener noreferrer' : undefined}
+          class="text-muted-foreground underline underline-offset-2 decoration-accent/50 hover:text-accent hover:decoration-accent transition-colors"
+        >
+          {item.text}
+        </a>
+        ]
+      </div>
+    ))
+  }
+</div>

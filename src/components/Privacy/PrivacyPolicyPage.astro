@@ -1,0 +1,65 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageSection from '../PageSection.astro';
+import { getApp } from '../../data/apps';
+import { getContact } from '../../data/cv';
+import type { Locale } from '../../lib/locale';
+import { privacyPage } from './Privacy.i18n';
+import { inlineMarkdown } from '../../lib/inline-markdown';
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+
+const { locale, slug } = Astro.props;
+const t = privacyPage[locale];
+const app = getApp(locale, slug);
+if (!app) throw new Error(`Unknown app slug: ${slug}`);
+const contact = getContact(locale);
+---
+
+<Base
+  locale={locale}
+  title={`${app.name} — ${t.indexTitle}`}
+  description={t.indexDescription}
+  path={`privacy/${slug}`}
+  current="privacy"
+>
+  <PageSection>
+    <h1 class="mb-2 text-4xl font-bold tracking-tight text-balance md:text-5xl">
+      {app.name} — {t.indexTitle}
+    </h1>
+    <p class="mb-8 text-sm text-muted-foreground">
+      {t.lastUpdated}: {app.lastUpdated}
+    </p>
+
+    <p class="mb-6 text-sm text-muted-foreground italic">{t.placeholderNotice}</p>
+
+    <div class="space-y-4">
+      {
+        app.privacyBody.map((paragraph) => (
+          <p
+            class="text-base leading-relaxed text-pretty text-foreground/85"
+            set:html={inlineMarkdown(paragraph)}
+          />
+        ))
+      }
+    </div>
+
+    {
+      contact.email && (
+        <p class="mt-6 text-sm text-muted-foreground">
+          {t.contactNote}{' '}
+          <a
+            href={`mailto:${contact.email}`}
+            class="underline underline-offset-2 decoration-accent/50 transition-colors hover:text-accent hover:decoration-accent"
+          >
+            {contact.email}
+          </a>
+          .
+        </p>
+      )
+    }
+  </PageSection>
+</Base>

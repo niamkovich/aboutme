@@ -28,11 +28,11 @@ cv:
       ]
     skills:
       - label: Languages
-        details: JavaScript, TypeScript
+        details: JavaScript, TypeScript, Swift, Java, Kotlin, SQL, Python
       - label: Cross platform development
-        details: React-native, Expo
+        details: React-native, Expo, Node, Bun
       - label: Tools & Frameworks
-        details: React, React-native, Expo SDK, MobX, Firebase, Branch.io, Crowdin
+        details: React, React-native, Strapi, Elysia.js, Drizzle-orm, Nest.js, Expo SDK, Mobx, Zustand
       - label: "DevOps & Infrastructure:"
         details: GitHub Actions, GitLab CI, Bitrise workflows, Expo Application Services
           workflows.
@@ -66,12 +66,12 @@ cv:
         summary:
         highlights: []
     experience:
-      - company: JDG Aliaksei Niamkovich
+      - company: "JDG (Jednoosobowa Działalność Gospodarcza) Aliaksei Niamkovich"
         position: React-native developer
         start_date: 2023-11
-        end_date: present
+        end_date: 2026-02
         location:
-      - company: AKVEO
+      - company: "[AKVEO](https://www.akveo.com/)"
         position: Mobile application developer
         date:
         start_date: 2020-03
@@ -79,7 +79,7 @@ cv:
         location: Minsk, Belarus. Białystok, Poland.
         summary:
         highlights: []
-      - company: HQSoftware
+      - company: "[HQSoftware](https://hqsoftwarelab.com/)"
         position: Front-end developer
         date:
         start_date: 2015-12
@@ -87,7 +87,7 @@ cv:
         location: Minsk, Belarus
         summary:
         highlights: []
-      - company: Daroo
+      - company: "[Daroo](https://daroo.by/)"
         position: Front-end developer. UI/UX - designer
         date:
         start_date: 2014-05
@@ -96,6 +96,30 @@ cv:
         summary:
         highlights: []
     projects:
+      - name: "[A HIPAA-Compliant Platform for Opioid Crisis Response
+          Teams](https://www.akveo.com/case-study-ai/goldie-health)"
+        summary: >-
+          Goldie Health is a digital health platform created to support agencies
+          identifying and engaging individuals at risk of opioid overdose. The
+          platform helps response teams deliver personalized care by integrating
+          with electronic patient care reports (ePCRs), electronic health
+          records (EHRs), and local community referral networks. It also
+          addresses barriers to treatment by factoring in social determinants of
+          health such as housing instability or financial constraints.
+
+          By offering tailored, adaptive care pathways and ensuring compliance
+          with HIPAA and 42 CFR Part 2 regulations, Goldie enables secure data
+          sharing and collaboration among healthcare providers and social
+          service organizations.
+        location: Białystok, Poland
+        start_date: 2025-08
+        end_date: 2026-01
+        highlights:
+          - "**Tech stack:** React Native (Expo), React, MobX, EAS"
+          - Offline mode support
+          - Dynamic form system based on JSON-schema validation
+          - Automated build pipeline with GitHub Actions and Expo Application
+            Services
       - name: "[Smart
           Caravan](https://www.akveo.com/case-studies/application-for-mobile-ho\
           mes)"
@@ -129,30 +153,6 @@ cv:
           - QR code scanning via camera integration
           - Crash reporting and monitoring
           - Deep linking platform integration. First Firebase, then Branch.io
-      - name: "[A HIPAA-Compliant Platform for Opioid Crisis Response
-          Teams](https://www.akveo.com/case-study-ai/goldie-health)"
-        summary: >-
-          Goldie Health is a digital health platform created to support agencies
-          identifying and engaging individuals at risk of opioid overdose. The
-          platform helps response teams deliver personalized care by integrating
-          with electronic patient care reports (ePCRs), electronic health
-          records (EHRs), and local community referral networks. It also
-          addresses barriers to treatment by factoring in social determinants of
-          health such as housing instability or financial constraints.
-
-          By offering tailored, adaptive care pathways and ensuring compliance
-          with HIPAA and 42 CFR Part 2 regulations, Goldie enables secure data
-          sharing and collaboration among healthcare providers and social
-          service organizations.
-        location: Białystok, Poland
-        start_date: 2025-08
-        end_date: 2026-01
-        highlights:
-          - "**Tech stack:** React Native (Expo), React, MobX, EAS"
-          - Offline mode support
-          - Dynamic form system based on JSON-schema validation
-          - Automated build pipeline with GitHub Actions and Expo Application
-            Services
     languages:
       - label: English
         details: "[C1](https://cert.efset.org/JXE5Bb)"
