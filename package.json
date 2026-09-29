@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run format:check && npm run lint && npm run check"
+    "verify": "astro sync && npm run format:check && npm run lint && npm run check"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.5",

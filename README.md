@@ -18,12 +18,19 @@ Privacy policies) are original.
 | `npm run check`   | TypeScript + Astro diagnostics            |
 | `npm run lint`    | ESLint (`--fix` variant: `lint:fix`)      |
 | `npm run format`  | Prettier write (`format:check` to verify) |
-| `npm run verify`  | format:check → lint → check, in order     |
+| `npm run verify`  | astro sync → format:check → lint → check  |
 
 Requires Node ≥ 24.16 (`.nvmrc` pins it) — `eslint-plugin-astro` refuses to
 install below that. `eslint-plugin-jsx-a11y` is deliberately absent: it has no
 ESLint 10 support yet, so the `astro/jsx-a11y-*` rules are unavailable and
 accessibility is checked by hand rather than by rule.
+
+`verify` runs `astro sync` first to generate `.astro/types.d.ts` (the content
+collection types `getCollection('blog', ...)` needs) before ESLint's
+type-aware rules see the code — without it, a clean checkout with no prior
+`dev`/`check` run resolves `CollectionEntry<'blog'>` to `any` and every
+`@typescript-eslint/no-unsafe-*` rule fires on `src/lib/blog-data.ts`. This
+bit CI once already; `rm -rf .astro && npm run lint` reproduces it locally.
 
 ## Where the content lives
 
