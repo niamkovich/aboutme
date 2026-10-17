@@ -96,6 +96,23 @@ cv:
         summary:
         highlights: []
     projects:
+      - name: "[Czarha](https://czarha.online/)"
+        summary: >-
+          Personal project: an iOS app and a website for crossing the Belarusian
+          border. They show the electronic waiting-zone queue, how long the
+          crossing really takes from drivers' crowdsourced reports, and when to
+          set off for the checkpoint. Published on the [App
+          Store](https://apps.apple.com/app/id6811606555).
+        start_date: 2026-09
+        end_date: present
+        highlights:
+          - "**Tech stack:** React Native (Expo), TypeScript, Zustand, TanStack
+            Query, Bun, Elysia.js, Drizzle ORM, Next.js, Fly.io, EAS"
+          - Live Activities and Dynamic Island, updated over APNs while the app
+            is suspended
+          - Offline-first crossing reports with a persisted sync queue
+          - Push notifications predicting when to leave for the checkpoint
+          - Anonymous device identity with no sign-up; six app languages
       - name: "[A HIPAA-Compliant Platform for Opioid Crisis Response
           Teams](https://www.akveo.com/case-study-ai/goldie-health)"
         summary: >-

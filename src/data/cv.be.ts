@@ -74,6 +74,18 @@ export const beOverlay: Record<string, CvTranslation> = {
 
   /* --- Projects ----------------------------------------------------------- */
 
+  'project:czarha': {
+    same: ['title'],
+    summary:
+      'Уласны праект: iOS-аплікацыя і сайт для перасячэння беларускай мяжы. Паказваюць электронную чаргу ў зоне чакання, колькі насамрэч доўжыцца пераход паводле справаздач кіроўцаў і калі час выязджаць да пункта пропуску. Апублікаваная ў [App Store](https://apps.apple.com/app/id6811606555).',
+    highlights: [
+      '**Тэхналогіі:** React Native (Expo), TypeScript, Zustand, TanStack Query, Bun, Elysia.js, Drizzle ORM, Next.js, Fly.io, EAS',
+      'Live Activities і Dynamic Island, якія абнаўляюцца праз APNs, пакуль аплікацыя ў фоне',
+      'Справаздачы пра пераход, што працуюць без сеткі, з захаванай чаргой сінхранізацыі',
+      'Push-апавяшчэнні з прагнозам, калі выязджаць да пункта пропуску',
+      'Ананімная ідэнтычнасць прылады без рэгістрацыі; шэсць моў аплікацыі',
+    ],
+  },
   'project:smart-caravan': {
     same: ['title'],
     location: 'Беласток, Польшча',

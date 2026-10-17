@@ -14,11 +14,11 @@ interface Props {
   locale: Locale;
   title: string;
   description: string;
-  /** Exact route segment (e.g. '', 'cv', 'apps', `privacy/${slug}`) — drives canonical/hreflang.
+  /** Exact route segment (e.g. '', 'cv', 'apps') — drives canonical/hreflang.
    *  When `translated` is false, this is the full absolute path instead (e.g. `/blog/my-post`). */
   path: string;
   /** Which nav item to mark current; distinct from `path` since e.g. every
-   *  privacy sub-page highlights the same "Privacy" nav entry. */
+   *  blog post highlights the same "Blog" section. */
   current: NavSection;
   /** false for content with no be/en counterpart (blog posts): skips hreflang
    *  alternates and the language-switch link, since there's nothing to switch to. */

@@ -5,8 +5,8 @@ Personal site — Astro, static output, bilingual (Belarusian default, English a
 The visual design (color tokens, dark mode, typography) is ported from the
 [wqqz.dev](https://github.com/imwqqz/wqqz.dev) Astro theme (MIT licensed).
 Only its design tokens and layout patterns were carried over — this site's
-content structure, i18n, routing, and pages (About, CV, Apps, Contact, per-app
-Privacy policies) are original.
+content structure, i18n, routing, and pages (About, CV, Apps, Contact) are
+original.
 
 ## Commands
 
@@ -56,9 +56,7 @@ clean `npm run dev` console means nothing is accidentally untranslated.
 gets its own directory, alongside its `ComponentName.i18n.ts`; a component
 that doesn't stays flat at the top level.** So `Nav.astro` + `Nav.i18n.ts`
 live in `components/Nav/`, and the same for `HomePage`, `CvPage`, `AppsPage`,
-`ContactPage`, `ContactDetails`. `components/Privacy/` is the one
-two-component case — `PrivacyIndexPage.astro` and `PrivacyPolicyPage.astro`
-share `Privacy.i18n.ts`, so both live there with it. Everything with no copy
+`ContactPage`, `ContactDetails`. Everything with no copy
 of its own — `AppCard.astro`, `CvEntry.astro`, `LabelledGrid.astro`,
 `PageSection.astro` — stays at `components/` root; `AppCard.astro` reads
 `AppsPage`'s copy (`./AppsPage/AppsPage.i18n`) without owning any of its own.
@@ -73,21 +71,20 @@ through an indirection only two places use.
 of its own, which is why it lives in `src/lib/` with the other framework-free
 utilities (`tags.ts`, `search.ts`, …) instead of next to any one component.
 
-**`src/data/apps.ts`** holds the apps section: one entry per app (slug, store
-links, per-locale name/tagline/description and privacy-policy body). Content
-is currently placeholder — no real apps are published yet. `getApps()` backs
-`/apps` and `/privacy`; `getApp()` backs each `/privacy/<slug>` page.
+**`src/data/apps.ts`** holds the apps section: one entry per published app
+(slug, store links, the app's website/privacy/support URLs, per-locale
+name/tagline/description). `getApps()` backs `/apps`. Privacy policies live on
+each app's own site and are linked from its card, not hosted here. Only list an
+app once it's live — every link must resolve.
 
 ## Pages
 
-| Route (`be`, default) | Route (`en`)         | Content                                                                                         |
-| --------------------- | -------------------- | ----------------------------------------------------------------------------------------------- |
-| `/`                   | `/en/`               | About (`HomePage.astro`)                                                                        |
-| `/cv`                 | `/en/cv`             | CV (`CvPage.astro`)                                                                             |
-| `/apps`               | `/en/apps`           | Apps list (`AppsPage.astro`)                                                                    |
-| `/contact`            | `/en/contact`        | Contact details (`ContactPage.astro`)                                                           |
-| `/privacy`            | `/en/privacy`        | Index of per-app policies                                                                       |
-| `/privacy/<slug>`     | `/en/privacy/<slug>` | One privacy policy per app, statically generated via `getStaticPaths()` from `src/data/apps.ts` |
+| Route (`be`, default) | Route (`en`)  | Content                               |
+| --------------------- | ------------- | ------------------------------------- |
+| `/`                   | `/en/`        | About (`HomePage.astro`)              |
+| `/cv`                 | `/en/cv`      | CV (`CvPage.astro`)                   |
+| `/apps`               | `/en/apps`    | Apps list (`AppsPage.astro`)          |
+| `/contact`            | `/en/contact` | Contact details (`ContactPage.astro`) |
 
 **`/blog`** is not part of the be/en split — posts are single-language (see
 below), so it lives at an unprefixed path with no locale counterpart.
@@ -155,8 +152,8 @@ lang: be # 'be' | 'en', default 'be' — sets that post's <html lang>
 ogImage: string # optional
 ```
 
-`src/content/blog/welcome-to-the-blog.md` is a demo post — delete it once you
-have real content.
+There are no posts yet, so the blog is left out of the nav (`Nav.astro`).
+Put it back there with the first post.
 
 **Markdown**: posts render through Astro's own default processor — no custom
 remark/rehype pipeline. That still covers GFM (tables, task lists,
