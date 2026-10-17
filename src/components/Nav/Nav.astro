@@ -25,9 +25,8 @@ const navItems: { section: NavSection; path: string; label: string; absolute?: b
   { section: '', path: '', label: t.about },
   { section: 'cv', path: 'cv', label: t.cv },
   { section: 'apps', path: 'apps', label: t.apps },
-  // The blog isn't translated (single-language posts), so it lives outside
-  // the locale prefix and is linked to directly rather than via localePath().
-  { section: 'blog', path: 'blog', label: t.blog, absolute: true },
+  // The blog stays out of the nav until it has a first post. Being untranslated,
+  // it goes back as { section: 'blog', path: 'blog', label, absolute: true }.
   { section: 'contact', path: 'contact', label: t.contact },
 ];
 
@@ -56,7 +55,6 @@ function linkClass(active: boolean): string {
         {navItems.map((item) => <span>{item.label}</span>)}
       </div>
       <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-        <span>{t.privacy}</span>
         {translated && <span>{LOCALE_NAME[other]}</span>}
       </div>
     </div>
@@ -82,13 +80,6 @@ function linkClass(active: boolean): string {
         }
       </div>
       <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-        <a
-          href={localePath(locale, 'privacy')}
-          class={linkClass(current === 'privacy')}
-          aria-current={current === 'privacy' ? 'page' : undefined}
-        >
-          {t.privacy}
-        </a>
         {
           translated && (
             <a

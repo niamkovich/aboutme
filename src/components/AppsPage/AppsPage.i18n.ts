@@ -4,27 +4,28 @@ export interface AppsPageCopy {
   title: string;
   lede: string;
   description: string;
-  comingSoon: string;
+  websiteLink: string;
   privacyLink: string;
-  placeholderNotice: string;
+  supportLink: string;
 }
 
 export const appsPage: Record<Locale, AppsPageCopy> = {
   be: {
     title: 'Аплікацыі',
     lede: 'Мабільныя аплікацыі, якія я распрацоўваю.',
-    description: 'Мабільныя аплікацыі Аляксея Нямковіча: спасылкі на App Store і Google Play.',
-    comingSoon: 'Хутка',
+    description:
+      'Мабільныя аплікацыі Аляксея Нямковіча: спасылкі на App Store, сайты і палітыкі прыватнасці.',
+    websiteLink: 'Сайт',
     privacyLink: 'Палітыка прыватнасці',
-    placeholderNotice:
-      'Гэта чарнавы змест-заглушка — рэальныя дадзеныя дадатку будуць дададзены пазней.',
+    supportLink: 'Падтрымка',
   },
   en: {
     title: 'Apps',
     lede: 'Mobile apps I build.',
-    description: "Aliaksei Niamkovich's mobile apps: App Store and Google Play links.",
-    comingSoon: 'Coming soon',
+    description:
+      "Aliaksei Niamkovich's mobile apps: App Store links, websites and privacy policies.",
+    websiteLink: 'Website',
     privacyLink: 'Privacy policy',
-    placeholderNotice: 'This is placeholder content — real app details will be added later.',
+    supportLink: 'Support',
   },
 };

@@ -5,7 +5,7 @@ export const LOCALES: Locale[] = ['be', 'en'];
 export const DEFAULT_LOCALE: Locale = 'be';
 
 /** Which nav item (if any) should be marked current for a given page. */
-export type NavSection = '' | 'cv' | 'apps' | 'blog' | 'contact' | 'privacy';
+export type NavSection = '' | 'cv' | 'apps' | 'blog' | 'contact';
 
 /** Native name of each locale, for the language switch. */
 export const LOCALE_NAME: Record<Locale, string> = {
